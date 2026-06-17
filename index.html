@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CookNest — Recipe Kits, Delivered Fresh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+</head>
+<body>
+<!-- ── NAV ── -->
+<nav class="nav">
+  <div class="nav-brand" onclick="showPage('home')">
+    <div class="nav-brand-mark">🍳</div>
+    <span class="nav-brand-name">CookNest</span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('home')">Home</button>
+    <button class="nav-link" onclick="showPage('orders')">My Orders</button>
+    <!-- Fan Favourite dropdown -->
+    <div class="nav-dropdown">
+      <button class="nav-link" id="nav-fanfav-btn">Fan Favourite ▾</button>
+      <div class="nav-dropdown-menu" id="fanfav-dropdown">
+        <!-- filled by renderFanFavDropdown() -->
+      </div>
+    </div>
+    <button class="nav-link" onclick="showPage('flavors')">Flavors</button>
+  </div>
+  <div class="nav-right">
+    <!-- Auth area — toggled by JS -->
+    <div id="nav-auth-area">
+      <button class="nav-auth" onclick="openLogin()">👤 Sign in</button>
+    </div>
+    <button class="nav-cart" onclick="showPage('cart')">
+      🛒 Cart <span class="cart-badge" id="cart-count">0</span>
+    </button>
+  </div>
+</nav>
+<!-- ══════════════ HOME PAGE ══════════════ -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eyebrow">✦ Fresh recipe kits, delivered</div>
+        <h1 class="hero-headline">Cook something<br><em>unforgettable</em><br>tonight.</h1>
+        <p class="hero-sub">Curated recipe kits with pre-portioned ingredients, step-by-step guides, and chef tips — from Filipino classics to global favourites.</p>
+        <div class="hero-actions">
+          <button class="btn-ember" onclick="document.getElementById('recipe-section').scrollIntoView({behavior:'smooth'})">Browse recipes →</button>
+          <button class="btn-ghost-white" onclick="showPage('flavors')">Explore flavors</button>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-val">120+</div><div class="hero-stat-label">Recipes</div></div>
+          <div><div class="hero-stat-val">4.8★</div><div class="hero-stat-label">Avg rating</div></div>
+          <div><div class="hero-stat-val">5,000+</div><div class="hero-stat-label">Happy cooks</div></div>
+        </div>
+      </div>
+      <!-- Hero fan favourite card — dynamic -->
+      <div class="hero-card" id="hero-feature-card"></div>
+    </div>
+  </section>
+  <div class="search-strip">
+    <div class="search-strip-inner">
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" type="text" id="search-input" placeholder="Search recipes, cuisines…" oninput="renderGrid()">
+      </div>
+      <div class="filter-pills" id="filter-pills"></div>
+      <select class="sort-select" onchange="currentSort=this.value;renderGrid()">
+        <option value="default">Sort: Default</option>
+        <option value="rating">Top Rated</option>
+        <option value="price-asc">Price: Low→High</option>
+        <option value="price-desc">Price: High→Low</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+  </div>
+  <div class="section" id="recipe-section">
+    <div class="section-head">
+      <div>
+        <div class="section-title">All Recipes</div>
+        <div class="section-sub" id="grid-count"></div>
+      </div>
+    </div>
+    <div class="recipe-grid" id="recipe-grid"></div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">🍳 CookNest</div>
+      <div class="footer-links">
+        <a class="footer-link" href="#">About</a>
+        <a class="footer-link" href="#">FAQ</a>
+        <a class="footer-link" href="#">Privacy</a>
+        <a class="footer-link" href="#">Contact</a>
+      </div>
+      <div class="footer-copy">© 2025 CookNest. All rights reserved.</div>
+    </div>
+  </footer>
+</div>
+<!-- ══════════════ CART PAGE ══════════════ -->
+<div class="page" id="page-cart">
+  <div class="cart-layout">
+    <div class="cart-main">
+      <h2>Your Cart</h2>
+      <div id="cart-items"></div>
+    </div>
+    <div id="cart-sidebar"></div>
+  </div>
+</div>
+<!-- ══════════════ ORDERS PAGE ══════════════ -->
+<div class="page" id="page-orders">
+  <div class="orders-page">
+    <h2>My Orders</h2>
+    <div id="orders-list"></div>
+  </div>
+</div>
+<!-- ══════════════ FAN FAVOURITE EDITOR PAGE ══════════════ -->
+<div class="page" id="page-fanfav">
+  <div class="fan-fav-page">
+    <h2>Fan Favourite</h2>
+    <p class="page-sub">Choose which recipe is highlighted as the fan favourite on the home page.</p>
+    <div class="fan-fav-card">
+      <div class="fan-fav-preview" id="fanfav-preview">
+        <!-- updated live -->
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label style="font-size:12px;font-weight:500;color:var(--ink-2);margin-bottom:12px;display:block;letter-spacing:0.3px">SELECT A RECIPE</label>
+        <div class="fan-fav-recipe-list" id="fanfav-recipe-list"></div>
+      </div>
+      <button class="btn-save-fav" onclick="saveFanFav()">Save Fan Favourite</button>
+    </div>
+  </div>
+</div>
+<!-- ══════════════ FLAVORS PAGE ══════════════ -->
+<div class="page" id="page-flavors">
+  <div class="flavors-page">
+    <h2>Our Flavors</h2>
+    <p class="page-sub">Every kit is crafted around a signature flavor profile. Find the taste that speaks to you.</p>
+    <div class="flavor-intro">
+      <div class="flavor-intro-emoji">🌶️</div>
+      <div class="flavor-intro-text">
+        <h3>Six bold flavor worlds</h3>
+        <p>Each CookNest flavor family is a curated collection of recipes sharing the same soul — ingredients, techniques, and the feeling they leave behind. Explore them all or start with your favorite.</p>
+      </div>
+    </div>
+    <div class="flavor-grid">
+      <div class="flavor-card" onclick="setFilter('Filipino');showPage('home')">
+        <div class="flavor-card-header" style="background:linear-gradient(135deg,#3D1F0A,#B85A18)">🍗<span class="flavor-label">Filipino</span></div>
+        <div class="flavor-card-body">
+          <div class="flavor-card-name">Tangy & Savory</div>
+          <div class="flavor-card-desc">Vinegar-braised, soy-kissed, garlicky — the bold, comforting flavors of home cooking passed down through generations.</div>
+          <div class="flavor-tags"><span class="flavor-tag">Adobo</span><span class="flavor-tag">Sinigang</span><span class="flavor-tag">Kare-kare</span></div>
+          <div class="flavor-card-foot">
+            <div class="flavor-intensity">Intensity <div class="intensity-dots"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div></div>
+            <button class="btn-explore">Browse →</button>
+          </div>
+        </div>
+      </div>
+      <div class="flavor-card" onclick="setFilter('Italian');showPage('home')">
+        <div class="flavor-card-header" style="background:linear-gradient(135deg,#1a3a1a,#4a7a2a)">🍝<span class="flavor-label">Italian</span></div>
+        <div class="flavor-card-body">
+          <div class="flavor-card-name">Rich & Umami</div>
+          <div class="flavor-card-desc">Slow-cooked tomato, aged cheese, and the deep satisfaction of a perfect meat sauce — Italian soul food at its finest.</div>
+          <div class="flavor-tags"><span class="flavor-tag">Bolognese</span><span class="flavor-tag">Carbonara</span><span class="flavor-tag">Arrabbiata</span></div>
+          <div class="flavor-card-foot">
+            <div class="flavor-intensity">Intensity <div class="intensity-dots"><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+            <button class="btn-explore">Browse →</button>
+          </div>
+        </div>
+      </div>
+      <div class="flavor-card" onclick="setFilter('Asian');showPage('home')">
+        <div class="flavor-card-header" style="background:linear-gradient(135deg,#1a1a3a,#2a4a7a)">🍛<span class="flavor-label">Asian</span></div>
+        <div class="flavor-card-body">
+          <div class="flavor-card-name">Aromatic & Spiced</div>
+          <div class="flavor-card-desc">Lemongrass, ginger, galangal, coconut — a symphony of aromatics that warm you from the inside out.</div>
+          <div class="flavor-tags"><span class="flavor-tag">Curry</span><span class="flavor-tag">Pad Thai</span><span class="flavor-tag">Laksa</span></div>
+          <div class="flavor-card-foot">
+            <div class="flavor-intensity">Intensity <div class="intensity-dots"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div></div></div>
+            <button class="btn-explore">Browse →</button>
+          </div>
+        </div>
+      </div>
+      <div class="flavor-card" onclick="setFilter('Healthy');showPage('home')">
+        <div class="flavor-card-header" style="background:linear-gradient(135deg,#1a3a2a,#2a6a3a)">🥗<span class="flavor-label">Healthy</span></div>
+        <div class="flavor-card-body">
+          <div class="flavor-card-name">Fresh & Bright</div>
+          <div class="flavor-card-desc">Citrus-dressed, herb-forward, and vibrantly fresh — food that feels as good as it tastes, without compromise.</div>
+          <div class="flavor-tags"><span class="flavor-tag">Salads</span><span class="flavor-tag">Grain bowls</span><span class="flavor-tag">Light soups</span></div>
+          <div class="flavor-card-foot">
+            <div class="flavor-intensity">Intensity <div class="intensity-dots"><div class="dot filled"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+            <button class="btn-explore">Browse →</button>
+          </div>
+        </div>
+      </div>
+      <div class="flavor-card" onclick="setFilter('Dessert');showPage('home')">
+        <div class="flavor-card-header" style="background:linear-gradient(135deg,#3a1a3a,#7a2a6a)">🍮<span class="flavor-label">Dessert</span></div>
+        <div class="flavor-card-body">
+          <div class="flavor-card-name">Sweet & Indulgent</div>
+          <div class="flavor-card-desc">Caramel-burnished, creamy, and unabashedly rich — the desserts you dream about and share with the people you love.</div>
+          <div class="flavor-tags"><span class="flavor-tag">Custard</span><span class="flavor-tag">Caramel</span><span class="flavor-tag">Chilled treats</span></div>
+          <div class="flavor-card-foot">
+            <div class="flavor-intensity">Intensity <div class="intensity-dots"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div></div>
+            <button class="btn-explore">Browse →</button>
+          </div>
+        </div>
+      </div>
+      <div class="flavor-card" onclick="setFilter('Western');showPage('home')">
+        <div class="flavor-card-header" style="background:linear-gradient(135deg,#2a1a0a,#6a3a1a)">🥩<span class="flavor-label">Western</span></div>
+        <div class="flavor-card-body">
+          <div class="flavor-card-name">Smoky & Hearty</div>
+          <div class="flavor-card-desc">Chargrilled, buttery, and deeply satisfying — the classics of the Western table, done right and served generous.</div>
+          <div class="flavor-tags"><span class="flavor-tag">Grilled</span><span class="flavor-tag">Roasted</span><span class="flavor-tag">Creamy sauces</span></div>
+          <div class="flavor-card-foot">
+            <div class="flavor-intensity">Intensity <div class="intensity-dots"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div></div></div>
+            <button class="btn-explore">Browse →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ══════════════ RECIPE MODAL ══════════════ -->
+<div class="overlay" id="recipe-overlay" onclick="maybeCloseModal(event)">
+  <div class="modal-sheet" id="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" onclick="closeRecipeModal()" aria-label="Close">×</button>
+    <div class="modal-handle"></div>
+    <div id="m-thumb"></div>
+    <div class="modal-body">
+      <div class="modal-cat" id="m-cat"></div>
+      <h2 class="modal-title" id="modal-title"></h2>
+      <div class="modal-meta-row" id="m-meta-row"></div>
+      <div class="modal-section-label">Ingredients</div>
+      <div class="ing-chips" id="m-ing"></div>
+      <div class="modal-section-label">Instructions</div>
+      <div class="steps-list" id="m-steps"></div>
+      <div class="modal-section-label">Chef tips</div>
+      <div class="ai-box">
+        <div class="ai-box-label">✦ AI chef</div>
+        <div class="ai-box-text loading" id="ai-tip">Generating personalised tips…</div>
+      </div>
+      <div class="modal-section-label">Reviews</div>
+<div class="comment-list" id="m-comments">
+  <div class="comment-item">
+    <div class="comment-author">Maria Santos</div>
+    <div class="comment-text">
+      ⭐⭐⭐⭐⭐ Very delicious and easy to follow.
+    </div>
+  </div>
+  <div class="comment-item">
+    <div class="comment-author">John Cruz</div>
+    <div class="comment-text">
+      ⭐⭐⭐⭐ Perfect for family dinner.
+    </div>
+  </div>
+  <div class="comment-item">
+    <div class="comment-author">Anna Reyes</div>
+    <div class="comment-text">
+      ⭐⭐⭐⭐⭐ We thoroughly enjoyed this recipe and my family loved it.
+    </div>
+  </div>
+  <div class="comment-item">
+    <div class="comment-author">Mark Villanueva</div>
+    <div class="comment-text">
+      ⭐⭐⭐⭐⭐ I made this for a family gathering last night. The instructions were incredibly straightforward and easy to follow.
+    </div>
+  </div>
+  <div class="comment-item">
+    <div class="comment-author">Sofia Garcia</div>
+    <div class="comment-text">
+      ⭐⭐⭐⭐ Step-by-step instructions were clear, perfect for beginners.
+    </div>
+  </div>
+</div>
+<div class="comment-input-row" style="margin-top:14px">
+        <input class="comment-name-input" type="text" id="c-name" placeholder="Your name">
+        <input class="comment-text-input" type="text" id="c-text" placeholder="Share your experience…" onkeydown="if(event.key==='Enter')postComment()">
+        <button class="btn-ember" style="padding:10px 18px;font-size:13px;border-radius:var(--radius-md);white-space:nowrap" onclick="postComment()">Post</button>
+      </div>
+      <div class="modal-buy-bar">
+        <div class="modal-price-block">
+          <div class="label">Recipe kit</div>
+          <div class="amount" id="m-price"></div>
+        </div>
+        <button class="btn-wish-big" id="btn-wish-big" onclick="toggleWish()" aria-label="Wishlist">♡</button>
+        <button class="btn-add-big" onclick="addToCartFromModal()">🛒 Add to cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ══════════════ CHECKOUT OVERLAY ══════════════ -->
+<div class="checkout-overlay" id="checkout-overlay" onclick="maybeCloseCheckout(event)">
+  <div class="checkout-panel" style="position:relative">
+    <button class="checkout-close" onclick="closeCheckout()" aria-label="Close">×</button>
+    <div class="checkout-title">Complete your order</div>
+    <div class="form-row">
+      <div class="form-group"><label>First name</label><input type="text" id="co-fname" placeholder="Juan"></div>
+      <div class="form-group"><label>Last name</label><input type="text" id="co-lname" placeholder="dela Cruz"></div>
+    </div>
+    <div class="form-group"><label>Email</label><input type="email" id="co-email" placeholder="juan@email.com"></div>
+    <div class="form-group"><label>Delivery address</label><textarea id="co-addr" rows="2" placeholder="123 Mango St, Quezon City, Metro Manila"></textarea></div>
+    <div class="form-group">
+      <label>Payment method</label>
+      <div class="pay-methods" id="pay-methods">
+        <div class="pay-method selected" data-pay="GCash" onclick="selectPay(this)"><span class="pay-icon">💙</span> GCash</div>
+        <div class="pay-method" data-pay="Maya" onclick="selectPay(this)"><span class="pay-icon">💚</span> Maya</div>
+        <div class="pay-method" data-pay="Credit Card" onclick="selectPay(this)"><span class="pay-icon">💳</span> Credit Card</div>
+        <div class="pay-method" data-pay="Cash on Delivery" onclick="selectPay(this)"><span class="pay-icon">💵</span> Cash on Delivery</div>
+      </div>
+    </div>
+    <div class="order-recap" id="co-recap"></div>
+    <button class="btn-place" onclick="placeOrder()">✓ Place Order</button>
+  </div>
+</div>
+<!-- ══════════════ LOGIN OVERLAY ══════════════ -->
+<div class="login-overlay" id="login-overlay" onclick="maybeCloseLogin(event)">
+  <div class="login-panel">
+    <button class="login-close" onclick="closeLogin()">×</button>
+    <div class="login-logo">
+      <div class="login-logo-mark">🍳</div>
+      <div class="login-logo-name">CookNest</div>
+    </div>
+    <div class="login-title" id="login-panel-title">Welcome back</div>
+    <div class="login-sub" id="login-panel-sub">Sign in to track orders and save favourites.</div>
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('login',this)">Sign In</button>
+      <button class="login-tab" onclick="switchLoginTab('register',this)">Create Account</button>
+    </div>
+    <!-- Sign In form -->
+    <div class="login-form-panel active" id="tab-login">
+      <div class="form-group"><label>Email</label><input type="email" id="li-email" placeholder="juan@email.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="li-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn-login-submit" onclick="doLogin()">Sign In →</button>
+      <div class="login-divider">or continue as guest</div>
+      <button class="btn-login-submit" style="background:var(--paper-2);color:var(--ink-2);border:1.5px solid var(--paper-3)" onclick="doGuestLogin()">👤 Browse as Guest</button>
+    </div>
+    <!-- Register form -->
+    <div class="login-form-panel" id="tab-register">
+      <div class="form-row">
+        <div class="form-group"><label>First name</label><input type="text" id="reg-fname" placeholder="Juan"></div>
+        <div class="form-group"><label>Last name</label><input type="text" id="reg-lname" placeholder="dela Cruz"></div>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="juan@email.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="reg-pass" placeholder="Choose a password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="btn-login-submit" onclick="doRegister()">Create Account →</button>
+    </div>
+  </div>
+</div>
+<!-- ══════════════ TOAST ══════════════ -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
