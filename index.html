@@ -7,8 +7,677 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ───────────────────────────────────────── */
+:root{
+  --ink:#1A1208;
+  --ink-2:#4A3F32;
+  --ink-3:#8A7D6E;
+  --paper:#FAF7F2;
+  --paper-2:#F2EDE5;
+  --paper-3:#E8E0D4;
+  --ember:#D44A0A;
+  --ember-light:#F05A18;
+  --ember-pale:#FDF0E8;
+  --gold:#C8922A;
+  --gold-pale:#FDF6E3;
+  --leaf:#2E6B40;
+  --leaf-pale:#EAF3EE;
+  --radius-sm:6px;
+  --radius-md:12px;
+  --radius-lg:20px;
+  --radius-xl:32px;
+  --shadow-card:0 2px 12px rgba(26,18,8,0.07);
+  --shadow-float:0 8px 32px rgba(26,18,8,0.14);
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --t-fast:0.15s ease;
+  --t-med:0.25s ease;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--paper);color:var(--ink);font-size:16px;line-height:1.6;overflow-x:hidden}
+img{display:block;max-width:100%}
+button{font-family:var(--font-body);cursor:pointer}
+input,textarea,select{font-family:var(--font-body)}
+a{color:inherit;text-decoration:none}
+
+/* ── NAV ──────────────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  background:var(--ink);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:68px;
+}
+.nav-brand{display:flex;align-items:center;gap:12px;cursor:pointer}
+.nav-brand-mark{
+  width:38px;height:38px;background:var(--ember);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+}
+.nav-brand-name{font-family:var(--font-display);font-size:22px;color:#fff;letter-spacing:-0.3px}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-link{
+  color:rgba(255,255,255,0.55);font-size:14px;font-weight:400;
+  padding:8px 16px;border-radius:var(--radius-sm);border:none;
+  background:transparent;transition:all var(--t-fast);white-space:nowrap;letter-spacing:0.1px;
+}
+.nav-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.nav-link.active{color:#fff;background:rgba(255,255,255,0.12)}
+
+/* Dropdown menu */
+.nav-dropdown{position:relative}
+.nav-dropdown-menu{
+  position:absolute;top:calc(100% + 8px);left:0;
+  background:var(--ink);border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--radius-md);min-width:180px;overflow:hidden;
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:all var(--t-med);z-index:600;box-shadow:0 8px 24px rgba(0,0,0,0.4);
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown-menu:hover{opacity:1;visibility:visible;transform:translateY(0)}
+.nav-dropdown-item{
+  display:block;width:100%;text-align:left;
+  padding:11px 18px;font-size:13px;color:rgba(255,255,255,0.65);
+  background:transparent;border:none;cursor:pointer;
+  transition:all var(--t-fast);border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.nav-dropdown-item:last-child{border-bottom:none}
+.nav-dropdown-item:hover{background:rgba(255,255,255,0.08);color:#fff}
+.nav-dropdown-item.active-item{color:var(--ember-light)}
+
+/* nav right side */
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-cart{
+  display:flex;align-items:center;gap:8px;
+  background:var(--ember);color:#fff;
+  border:none;border-radius:var(--radius-md);
+  padding:10px 20px;font-size:14px;font-weight:500;
+  transition:background var(--t-fast);position:relative;
+}
+.nav-cart:hover{background:var(--ember-light)}
+.cart-badge{
+  background:#fff;color:var(--ember);
+  border-radius:20px;padding:1px 7px;font-size:11px;font-weight:500;font-family:var(--font-mono);
+}
+
+/* Auth nav button */
+.nav-auth{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:var(--radius-md);padding:8px 16px;font-size:13px;font-weight:400;
+  transition:all var(--t-fast);
+}
+.nav-auth:hover{background:rgba(255,255,255,0.16);color:#fff}
+.nav-user-pill{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+  border-radius:var(--radius-md);padding:6px 14px;
+}
+.nav-user-avatar{
+  width:26px;height:26px;background:var(--ember);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:500;
+}
+.nav-user-name{font-size:13px;color:rgba(255,255,255,0.8)}
+.nav-logout{
+  background:none;border:none;color:rgba(255,255,255,0.45);font-size:12px;
+  cursor:pointer;padding:2px 6px;border-radius:4px;transition:color var(--t-fast);
+}
+.nav-logout:hover{color:#fff}
+
+/* ── PAGES ────────────────────────────────────────── */
+.page{display:none;min-height:100vh;padding-top:68px}
+.page.active{display:block}
+
+/* ── HERO ─────────────────────────────────────────── */
+.hero{
+  background:var(--ink);padding:80px 40px 72px;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 80% at 75% 50%, rgba(212,74,10,0.18) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(212,74,10,0.2);border:1px solid rgba(212,74,10,0.35);
+  color:var(--ember-light);border-radius:20px;padding:5px 14px;font-size:12px;
+  font-weight:500;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:24px;
+}
+.hero-headline{
+  font-family:var(--font-display);font-size:clamp(36px,5vw,58px);
+  color:#fff;line-height:1.08;letter-spacing:-1px;margin-bottom:20px;
+}
+.hero-headline em{font-style:italic;color:var(--ember-light)}
+.hero-sub{
+  font-size:17px;color:rgba(255,255,255,0.55);line-height:1.7;
+  max-width:460px;margin-bottom:36px;font-weight:300;
+}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.btn-ember{
+  background:var(--ember);color:#fff;border:none;
+  padding:14px 28px;border-radius:var(--radius-md);font-size:15px;font-weight:500;
+  transition:all var(--t-fast);display:inline-flex;align-items:center;gap:8px;
+}
+.btn-ember:hover{background:var(--ember-light);transform:translateY(-1px)}
+.btn-ghost-white{
+  background:transparent;color:rgba(255,255,255,0.7);
+  border:1px solid rgba(255,255,255,0.18);
+  padding:14px 24px;border-radius:var(--radius-md);font-size:15px;font-weight:400;
+  transition:all var(--t-fast);
+}
+.btn-ghost-white:hover{background:rgba(255,255,255,0.07);color:#fff}
+.hero-stats{
+  display:flex;gap:28px;margin-top:40px;
+  padding-top:32px;border-top:1px solid rgba(255,255,255,0.1);
+}
+.hero-stat-val{font-family:var(--font-display);font-size:28px;color:#fff;line-height:1}
+.hero-stat-label{font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px;font-weight:300}
+
+.hero-card{
+  background:var(--paper);border-radius:var(--radius-xl);overflow:hidden;
+  position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.4);
+}
+.hero-card-img{
+  width:100%;height:260px;
+  background:linear-gradient(135deg,#3D1F0A 0%,#6B320F 40%,#B85A18 100%);
+  display:flex;align-items:center;justify-content:center;font-size:96px;position:relative;
+}
+.hero-card-badge{
+  position:absolute;top:16px;right:16px;
+  background:var(--ember);color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;
+}
+.hero-card-body{padding:24px}
+.hero-card-tag{font-size:11px;color:var(--ember);font-weight:500;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px}
+.hero-card-title{font-family:var(--font-display);font-size:22px;color:var(--ink);margin-bottom:6px;line-height:1.2}
+.hero-card-desc{font-size:13px;color:var(--ink-3);line-height:1.6;margin-bottom:16px}
+.hero-card-row{display:flex;justify-content:space-between;align-items:center}
+.hero-card-price{font-family:var(--font-display);font-size:24px;color:var(--ink)}
+.hero-card-price span{font-family:var(--font-body);font-size:13px;color:var(--ink-3);font-weight:300}
+
+/* ── SEARCH STRIP ─────────────────────────────────── */
+.search-strip{
+  background:var(--paper-2);border-bottom:1px solid var(--paper-3);
+  padding:20px 40px;position:sticky;top:68px;z-index:100;
+}
+.search-strip-inner{max-width:1120px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.search-wrap{position:relative;flex:1;max-width:480px}
+.search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-3);pointer-events:none}
+.search-input{
+  width:100%;padding:11px 16px 11px 42px;
+  border:1.5px solid var(--paper-3);border-radius:var(--radius-md);
+  background:var(--paper);color:var(--ink);font-size:14px;
+  transition:border-color var(--t-fast),box-shadow var(--t-fast);outline:none;
+}
+.search-input:focus{border-color:var(--ember);box-shadow:0 0 0 3px rgba(212,74,10,0.12)}
+.search-input::placeholder{color:var(--ink-3)}
+.filter-pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filter-pill{
+  padding:8px 16px;border-radius:20px;font-size:13px;font-weight:400;
+  border:1.5px solid var(--paper-3);background:var(--paper);color:var(--ink-2);
+  transition:all var(--t-fast);white-space:nowrap;
+}
+.filter-pill:hover{border-color:var(--ember);color:var(--ember)}
+.filter-pill.active{background:var(--ember);border-color:var(--ember);color:#fff}
+.sort-select{
+  padding:10px 14px;border:1.5px solid var(--paper-3);border-radius:var(--radius-md);
+  background:var(--paper);color:var(--ink-2);font-size:13px;outline:none;
+  transition:border-color var(--t-fast);
+}
+.sort-select:focus{border-color:var(--ember)}
+
+/* ── SECTION ──────────────────────────────────────── */
+.section{max-width:1120px;margin:0 auto;padding:48px 40px}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px}
+.section-title{font-family:var(--font-display);font-size:28px;color:var(--ink);line-height:1.1}
+.section-sub{font-size:14px;color:var(--ink-3);margin-top:6px;font-weight:300}
+
+/* ── RECIPE GRID ──────────────────────────────────── */
+.recipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px}
+.recipe-card{
+  background:var(--paper);border-radius:var(--radius-lg);
+  border:1.5px solid var(--paper-3);overflow:hidden;
+  transition:transform var(--t-med),box-shadow var(--t-med),border-color var(--t-med);cursor:pointer;
+}
+.recipe-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-float);border-color:var(--paper-3)}
+.recipe-card-thumb{
+  height:196px;display:flex;align-items:center;justify-content:center;
+  font-size:72px;position:relative;
+  background:linear-gradient(155deg,var(--paper-2) 0%,var(--paper-3) 100%);
+  transition:filter var(--t-med);
+}
+.recipe-card:hover .recipe-card-thumb{filter:brightness(0.96)}
+.recipe-card-wish{
+  position:absolute;top:12px;right:12px;
+  width:32px;height:32px;background:rgba(250,247,242,0.9);border:none;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--ink-3);transition:all var(--t-fast);backdrop-filter:blur(4px);
+}
+.recipe-card-wish:hover,.recipe-card-wish.wishlisted{color:#E24B4A}
+.recipe-card-body{padding:18px 18px 16px}
+.recipe-card-cat{font-size:11px;font-weight:500;letter-spacing:0.6px;text-transform:uppercase;color:var(--ember);margin-bottom:8px}
+.recipe-card-title{font-family:var(--font-display);font-size:18px;color:var(--ink);line-height:1.2;margin-bottom:6px}
+.recipe-card-desc{font-size:13px;color:var(--ink-3);line-height:1.6;margin-bottom:14px;font-weight:300}
+.recipe-card-foot{display:flex;justify-content:space-between;align-items:center}
+.stars-row{display:flex;align-items:center;gap:5px}
+.stars{color:var(--gold);font-size:12px;letter-spacing:1px}
+.stars-count{font-size:11px;color:var(--ink-3)}
+.recipe-card-price-wrap{display:flex;align-items:center;gap:8px}
+.recipe-card-price{font-family:var(--font-mono);font-size:16px;color:var(--ink);font-weight:400}
+.btn-add-card{
+  background:var(--ember);color:#fff;border:none;
+  border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-weight:500;
+  transition:all var(--t-fast);
+}
+.btn-add-card:hover{background:var(--ember-light)}
+
+/* ── RECIPE MODAL ─────────────────────────────────── */
+.overlay{
+  position:fixed;inset:0;background:rgba(26,18,8,0.65);z-index:800;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity var(--t-med);backdrop-filter:blur(3px);
+}
+.overlay.open{opacity:1;visibility:visible}
+.modal-sheet{
+  background:var(--paper);border-radius:var(--radius-xl) var(--radius-xl) 0 0;
+  width:100%;max-width:680px;max-height:92vh;overflow-y:auto;
+  transform:translateY(40px);transition:transform var(--t-med);
+}
+.overlay.open .modal-sheet{transform:translateY(0)}
+.modal-handle{width:40px;height:4px;background:var(--paper-3);border-radius:2px;margin:16px auto 0}
+.modal-thumb{
+  height:280px;display:flex;align-items:center;justify-content:center;font-size:100px;
+  background:linear-gradient(155deg,var(--paper-2) 0%,var(--paper-3) 100%);
+  margin:12px 24px;border-radius:var(--radius-lg);position:relative;
+}
+.modal-badge{
+  position:absolute;top:14px;right:14px;
+  background:var(--ember);color:#fff;font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;
+}
+.modal-body{padding:0 28px 32px}
+.modal-cat{font-size:11px;font-weight:500;letter-spacing:0.6px;text-transform:uppercase;color:var(--ember);margin-bottom:8px}
+.modal-title{font-family:var(--font-display);font-size:30px;color:var(--ink);line-height:1.1;margin-bottom:10px}
+.modal-meta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.modal-meta-item{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--ink-3)}
+.modal-section-label{
+  font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;
+  color:var(--ink-3);margin:24px 0 12px;
+  display:flex;align-items:center;gap:8px;
+}
+.modal-section-label::after{content:'';flex:1;height:1px;background:var(--paper-3)}
+.ing-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ing-chip{
+  background:var(--paper-2);border:1px solid var(--paper-3);
+  color:var(--ink-2);border-radius:var(--radius-sm);padding:5px 12px;font-size:13px;font-weight:300;
+}
+.steps-list{counter-reset:step;display:flex;flex-direction:column;gap:14px}
+.step-item{display:flex;gap:16px;align-items:flex-start}
+.step-num{
+  min-width:30px;height:30px;background:var(--ember-pale);color:var(--ember);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:500;flex-shrink:0;border:1.5px solid rgba(212,74,10,0.2);
+}
+.step-text{font-size:14px;color:var(--ink-2);line-height:1.7;padding-top:4px;font-weight:300}
+.ai-box{
+  background:var(--gold-pale);border:1.5px solid rgba(200,146,42,0.25);
+  border-radius:var(--radius-md);padding:18px 20px;margin-top:8px;
+}
+.ai-box-label{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:500;letter-spacing:0.6px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;
+}
+.ai-box-text{font-size:13px;color:var(--ink-2);line-height:1.7;font-weight:300}
+.ai-box-text.loading{color:var(--ink-3);font-style:italic}
+.comment-list{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.comment-item{background:var(--paper-2);border:1px solid var(--paper-3);border-radius:var(--radius-md);padding:12px 16px}
+.comment-author{font-size:12px;font-weight:500;color:var(--ember);margin-bottom:3px}
+.comment-text{
+    font-size:13px;
+    color:var(--ink-2);
+    line-height:1.6;
+    font-weight:300;
+    font-style:italic;
+}
+.comment-input-row{display:flex;gap:8px;margin-top:12px}
+.comment-name-input,.comment-text-input{
+  border:1.5px solid var(--paper-3);border-radius:var(--radius-md);
+  background:var(--paper);color:var(--ink);font-size:13px;padding:10px 14px;outline:none;
+  transition:border-color var(--t-fast);
+}
+.comment-name-input{width:130px;flex-shrink:0}
+.comment-text-input{flex:1}
+.comment-name-input:focus,.comment-text-input:focus{border-color:var(--ember)}
+.modal-buy-bar{
+  display:flex;align-items:center;gap:16px;
+  margin-top:28px;padding-top:24px;border-top:1.5px solid var(--paper-3);
+}
+.modal-price-block .label{font-size:11px;color:var(--ink-3);margin-bottom:3px;font-weight:300}
+.modal-price-block .amount{font-family:var(--font-display);font-size:28px;color:var(--ink)}
+.btn-add-big{
+  flex:1;background:var(--ember);color:#fff;border:none;
+  border-radius:var(--radius-md);padding:15px 24px;font-size:15px;font-weight:500;
+  transition:all var(--t-fast);display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-add-big:hover{background:var(--ember-light);transform:translateY(-1px)}
+.btn-wish-big{
+  width:50px;height:50px;border:1.5px solid var(--paper-3);background:var(--paper);
+  border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:var(--ink-3);transition:all var(--t-fast);flex-shrink:0;
+}
+.btn-wish-big:hover,.btn-wish-big.wishlisted{border-color:#E24B4A;color:#E24B4A}
+.modal-close{
+  position:absolute;top:18px;right:18px;
+  width:36px;height:36px;background:rgba(250,247,242,0.9);border:none;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:var(--ink);cursor:pointer;z-index:10;
+  backdrop-filter:blur(4px);transition:background var(--t-fast);
+}
+.modal-close:hover{background:var(--paper-3)}
+
+/* ── CART PAGE ────────────────────────────────────── */
+.cart-layout{max-width:900px;margin:0 auto;padding:48px 40px;display:grid;grid-template-columns:1fr 320px;gap:32px;align-items:start}
+.cart-main h2{font-family:var(--font-display);font-size:28px;color:var(--ink);margin-bottom:24px}
+.cart-item{display:flex;gap:16px;align-items:center;padding:18px 0;border-bottom:1px solid var(--paper-3)}
+.cart-emoji{font-size:36px;width:56px;height:56px;background:var(--paper-2);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cart-info{flex:1}
+.cart-item-name{font-family:var(--font-display);font-size:16px;color:var(--ink);margin-bottom:3px}
+.cart-item-cat{font-size:12px;color:var(--ink-3);font-weight:300}
+.qty-wrap{display:flex;align-items:center;gap:8px;margin-top:10px}
+.qty-btn{
+  width:30px;height:30px;border:1.5px solid var(--paper-3);background:var(--paper);
+  border-radius:var(--radius-sm);font-size:16px;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;transition:all var(--t-fast);
+}
+.qty-btn:hover{border-color:var(--ember);color:var(--ember)}
+.qty-num{font-family:var(--font-mono);font-size:14px;min-width:20px;text-align:center;color:var(--ink)}
+.cart-item-price{font-family:var(--font-mono);font-size:15px;color:var(--ink);white-space:nowrap}
+.btn-rm{background:none;border:none;color:var(--ink-3);font-size:18px;cursor:pointer;padding:4px;transition:color var(--t-fast)}
+.btn-rm:hover{color:#E24B4A}
+.order-summary-card{background:var(--ink);color:#fff;border-radius:var(--radius-lg);padding:24px;position:sticky;top:100px}
+.summary-title{font-family:var(--font-display);font-size:20px;margin-bottom:20px;color:#fff}
+.summary-row{display:flex;justify-content:space-between;font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:10px;font-weight:300}
+.summary-divider{height:1px;background:rgba(255,255,255,0.1);margin:16px 0}
+.summary-total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:22px;color:#fff}
+.btn-checkout{width:100%;background:var(--ember);color:#fff;border:none;border-radius:var(--radius-md);padding:16px;font-size:15px;font-weight:500;margin-top:20px;transition:all var(--t-fast)}
+.btn-checkout:hover{background:var(--ember-light)}
+.empty-cart{text-align:center;padding:80px 24px;color:var(--ink-3)}
+.empty-icon{font-size:56px;margin-bottom:16px}
+.empty-title{font-family:var(--font-display);font-size:22px;color:var(--ink);margin-bottom:8px}
+.empty-sub{font-size:14px;font-weight:300}
+.btn-browse{
+  display:inline-flex;align-items:center;gap:8px;margin-top:20px;
+  background:var(--ember);color:#fff;border:none;border-radius:var(--radius-md);
+  padding:12px 24px;font-size:14px;font-weight:500;transition:background var(--t-fast);
+}
+.btn-browse:hover{background:var(--ember-light)}
+
+/* ── CHECKOUT OVERLAY ─────────────────────────────── */
+.checkout-overlay{
+  position:fixed;inset:0;background:rgba(26,18,8,0.65);z-index:900;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity var(--t-med);backdrop-filter:blur(4px);padding:24px;
+}
+.checkout-overlay.open{opacity:1;visibility:visible}
+.checkout-panel{
+  background:var(--paper);border-radius:var(--radius-xl);
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;
+  padding:36px;transform:scale(0.96);transition:transform var(--t-med);
+}
+.checkout-overlay.open .checkout-panel{transform:scale(1)}
+.checkout-title{font-family:var(--font-display);font-size:26px;color:var(--ink);margin-bottom:24px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:12px;font-weight:500;color:var(--ink-2);margin-bottom:6px;letter-spacing:0.3px}
+.form-group input,.form-group textarea,.form-group select{
+  width:100%;padding:12px 16px;border:1.5px solid var(--paper-3);border-radius:var(--radius-md);
+  background:var(--paper);color:var(--ink);font-size:14px;outline:none;
+  transition:border-color var(--t-fast),box-shadow var(--t-fast);
+}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--ember);box-shadow:0 0 0 3px rgba(212,74,10,0.1)}
+.form-group textarea{resize:vertical;min-height:72px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.order-recap{background:var(--paper-2);border-radius:var(--radius-md);padding:16px;margin:20px 0;font-size:13px}
+.recap-line{display:flex;justify-content:space-between;color:var(--ink-2);margin-bottom:6px;font-weight:300}
+.recap-total{display:flex;justify-content:space-between;font-weight:500;color:var(--ink);font-size:14px;border-top:1px solid var(--paper-3);margin-top:10px;padding-top:10px}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.pay-method{
+  border:1.5px solid var(--paper-3);border-radius:var(--radius-md);
+  padding:10px 14px;font-size:13px;color:var(--ink-2);cursor:pointer;
+  display:flex;align-items:center;gap:8px;transition:all var(--t-fast);background:var(--paper);
+}
+.pay-method:hover{border-color:var(--ember);color:var(--ember)}
+.pay-method.selected{border-color:var(--ember);background:var(--ember-pale);color:var(--ember)}
+.pay-icon{font-size:18px}
+.btn-place{
+  width:100%;background:var(--ember);color:#fff;border:none;
+  border-radius:var(--radius-md);padding:16px;font-size:15px;font-weight:500;
+  transition:all var(--t-fast);display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-place:hover{background:var(--ember-light);transform:translateY(-1px)}
+.checkout-close{
+  position:absolute;top:16px;right:16px;
+  width:36px;height:36px;background:var(--paper-2);border:none;
+  border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--ink-2);transition:background var(--t-fast);
+}
+.checkout-close:hover{background:var(--paper-3)}
+
+/* ── ORDERS PAGE ──────────────────────────────────── */
+.orders-page{max-width:720px;margin:0 auto;padding:48px 40px}
+.orders-page h2{font-family:var(--font-display);font-size:28px;color:var(--ink);margin-bottom:24px}
+.order-card{background:var(--paper);border:1.5px solid var(--paper-3);border-radius:var(--radius-lg);padding:22px;margin-bottom:16px}
+.order-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.order-id{font-family:var(--font-mono);font-size:13px;color:var(--ink-3)}
+.order-date{font-size:12px;color:var(--ink-3);font-weight:300;margin-top:3px}
+.order-status{background:var(--leaf-pale);color:var(--leaf);font-size:11px;font-weight:500;padding:4px 12px;border-radius:20px;letter-spacing:0.3px}
+.order-items-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.order-item-chip{background:var(--paper-2);border:1px solid var(--paper-3);border-radius:var(--radius-sm);padding:4px 10px;font-size:12px;color:var(--ink-2)}
+.order-foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--paper-3)}
+.order-pay-method{font-size:12px;color:var(--ink-3);font-weight:300}
+.order-total{font-family:var(--font-display);font-size:20px;color:var(--ink)}
+
+/* ── FLAVORS PAGE ─────────────────────────────────── */
+.flavors-page{max-width:960px;margin:0 auto;padding:48px 40px}
+.flavors-page h2{font-family:var(--font-display);font-size:32px;color:var(--ink);margin-bottom:8px}
+.flavors-page .page-sub{font-size:15px;color:var(--ink-3);margin-bottom:36px;font-weight:300}
+
+.flavor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.flavor-card{
+  background:var(--paper);border:1.5px solid var(--paper-3);
+  border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;
+  transition:transform var(--t-med),box-shadow var(--t-med),border-color var(--t-med);
+}
+.flavor-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-float);border-color:var(--ember)}
+.flavor-card-header{
+  height:120px;display:flex;align-items:center;justify-content:center;
+  font-size:60px;position:relative;
+}
+.flavor-label{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  background:rgba(26,18,8,0.7);color:#fff;
+  font-size:10px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;white-space:nowrap;
+}
+.flavor-card-body{padding:18px}
+.flavor-card-name{font-family:var(--font-display);font-size:20px;color:var(--ink);margin-bottom:6px}
+.flavor-card-desc{font-size:13px;color:var(--ink-3);line-height:1.6;margin-bottom:14px;font-weight:300}
+.flavor-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.flavor-tag{
+  background:var(--ember-pale);color:var(--ember);
+  border:1px solid rgba(212,74,10,0.2);
+  border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500;
+}
+.flavor-card-foot{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--paper-3)}
+.flavor-intensity{
+  display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3);
+}
+.intensity-dots{display:flex;gap:3px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--paper-3)}
+.dot.filled{background:var(--ember)}
+.btn-explore{
+  background:var(--ink);color:#fff;border:none;
+  border-radius:var(--radius-sm);padding:8px 16px;font-size:12px;font-weight:500;
+  transition:all var(--t-fast);
+}
+.btn-explore:hover{background:var(--ink-2)}
+
+/* flavor palette intro */
+.flavor-intro{
+  background:var(--ink);border-radius:var(--radius-lg);
+  padding:28px 32px;margin-bottom:32px;
+  display:flex;align-items:center;gap:24px;
+}
+.flavor-intro-emoji{font-size:48px;flex-shrink:0}
+.flavor-intro-text h3{font-family:var(--font-display);font-size:22px;color:#fff;margin-bottom:6px}
+.flavor-intro-text p{font-size:14px;color:rgba(255,255,255,0.55);font-weight:300;line-height:1.6}
+
+/* ── FAN FAVOURITE EDITOR ─────────────────────────── */
+.fan-fav-page{max-width:640px;margin:0 auto;padding:48px 40px}
+.fan-fav-page h2{font-family:var(--font-display);font-size:28px;color:var(--ink);margin-bottom:6px}
+.fan-fav-page .page-sub{font-size:14px;color:var(--ink-3);margin-bottom:32px;font-weight:300}
+.fan-fav-card{background:var(--paper);border:1.5px solid var(--paper-3);border-radius:var(--radius-lg);padding:32px}
+.fan-fav-preview{
+  background:linear-gradient(135deg,#3D1F0A 0%,#6B320F 40%,#B85A18 100%);
+  border-radius:var(--radius-lg);padding:24px;margin-bottom:28px;
+  display:flex;align-items:center;gap:20px;
+}
+.fan-fav-preview-emoji{font-size:52px}
+.fan-fav-preview-info{}
+.fan-fav-preview-badge{
+  display:inline-block;background:var(--ember);color:#fff;
+  font-size:10px;font-weight:500;padding:3px 9px;border-radius:20px;margin-bottom:6px;
+}
+.fan-fav-preview-title{font-family:var(--font-display);font-size:20px;color:#fff;margin-bottom:3px}
+.fan-fav-preview-cat{font-size:12px;color:rgba(255,255,255,0.55)}
+.fan-fav-recipe-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.fan-fav-recipe-option{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;border:1.5px solid var(--paper-3);border-radius:var(--radius-md);
+  background:var(--paper);cursor:pointer;transition:all var(--t-fast);
+}
+.fan-fav-recipe-option:hover{border-color:var(--ember);background:var(--ember-pale)}
+.fan-fav-recipe-option.selected{border-color:var(--ember);background:var(--ember-pale)}
+.fan-fav-opt-emoji{font-size:28px;width:44px;height:44px;background:var(--paper-2);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fan-fav-opt-info{flex:1}
+.fan-fav-opt-title{font-family:var(--font-display);font-size:15px;color:var(--ink)}
+.fan-fav-opt-cat{font-size:12px;color:var(--ink-3);font-weight:300}
+.fan-fav-check{color:var(--ember);font-size:18px;opacity:0;transition:opacity var(--t-fast)}
+.fan-fav-recipe-option.selected .fan-fav-check{opacity:1}
+.btn-save-fav{
+  width:100%;background:var(--ink);color:#fff;border:none;
+  border-radius:var(--radius-md);padding:15px;font-size:15px;font-weight:500;
+  transition:background var(--t-fast);margin-top:20px;
+}
+.btn-save-fav:hover{background:var(--ink-2)}
+
+/* ── LOGIN OVERLAY ────────────────────────────────── */
+.login-overlay{
+  position:fixed;inset:0;background:rgba(26,18,8,0.65);z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity var(--t-med);backdrop-filter:blur(4px);padding:24px;
+}
+.login-overlay.open{opacity:1;visibility:visible}
+.login-panel{
+  background:var(--paper);border-radius:var(--radius-xl);
+  width:100%;max-width:420px;padding:40px;
+  transform:scale(0.96);transition:transform var(--t-med);position:relative;
+}
+.login-overlay.open .login-panel{transform:scale(1)}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.login-logo-mark{width:36px;height:36px;background:var(--ember);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.login-logo-name{font-family:var(--font-display);font-size:20px;color:var(--ink)}
+.login-title{font-family:var(--font-display);font-size:24px;color:var(--ink);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--ink-3);margin-bottom:28px;font-weight:300}
+.login-tabs{display:flex;gap:0;margin-bottom:24px;background:var(--paper-2);border-radius:var(--radius-md);padding:4px}
+.login-tab{
+  flex:1;padding:9px;font-size:13px;font-weight:500;border:none;
+  background:transparent;color:var(--ink-3);border-radius:var(--radius-sm);cursor:pointer;
+  transition:all var(--t-fast);
+}
+.login-tab.active{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(26,18,8,0.08)}
+.login-close{
+  position:absolute;top:16px;right:16px;
+  width:36px;height:36px;background:var(--paper-2);border:none;
+  border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--ink-2);transition:background var(--t-fast);
+}
+.login-close:hover{background:var(--paper-3)}
+.login-form-panel{display:none}
+.login-form-panel.active{display:block}
+.btn-login-submit{
+  width:100%;background:var(--ember);color:#fff;border:none;
+  border-radius:var(--radius-md);padding:14px;font-size:15px;font-weight:500;
+  transition:all var(--t-fast);margin-top:8px;
+}
+.btn-login-submit:hover{background:var(--ember-light)}
+.login-divider{
+  display:flex;align-items:center;gap:12px;margin:20px 0;
+  font-size:12px;color:var(--ink-3);font-weight:300;
+}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--paper-3)}
+
+/* ── TOAST ────────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--ink);color:#fff;border-radius:var(--radius-md);
+  padding:12px 22px;font-size:14px;z-index:9999;
+  opacity:0;transition:all var(--t-med);pointer-events:none;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--leaf)}
+.toast.error{background:#C0392B}
+
+/* ── FOOTER ───────────────────────────────────────── */
+footer{background:var(--ink);padding:40px;margin-top:40px}
+.footer-inner{max-width:1120px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.footer-brand{font-family:var(--font-display);font-size:20px;color:#fff}
+.footer-copy{font-size:13px;color:rgba(255,255,255,0.35);font-weight:300}
+.footer-links{display:flex;gap:20px}
+.footer-link{font-size:13px;color:rgba(255,255,255,0.45);font-weight:300;transition:color var(--t-fast)}
+.footer-link:hover{color:#fff}
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--paper-2)}
+::-webkit-scrollbar-thumb{background:var(--paper-3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--ink-3)}
+
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;gap:32px}
+  .hero-card{max-width:420px}
+  .cart-layout{grid-template-columns:1fr;padding:32px 20px}
+  .order-summary-card{position:static}
+  .form-row{grid-template-columns:1fr}
+  .nav{padding:0 20px}
+  .section{padding:36px 20px}
+  .search-strip{padding:16px 20px}
+  .hero{padding:48px 20px 56px}
+  .fan-fav-page,.flavors-page,.orders-page{padding:36px 20px}
+  .footer-inner{flex-direction:column;gap:16px;text-align:center}
+  .footer-links{justify-content:center}
+}
+@media(max-width:600px){
+  .hero-headline{font-size:32px}
+  .hero-card{display:none}
+  .hero-stats{gap:20px}
+  .recipe-grid{grid-template-columns:1fr 1fr}
+  .modal-sheet{border-radius:var(--radius-xl) var(--radius-xl) 0 0}
+  .flavor-grid{grid-template-columns:1fr}
+}
+@media(max-width:400px){
+  .recipe-grid{grid-template-columns:1fr}
+  .filter-pills{display:none}
+  .pay-methods{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
 </head>
 <body>
+
 <!-- ── NAV ── -->
 <nav class="nav">
   <div class="nav-brand" onclick="showPage('home')">
@@ -18,6 +687,7 @@
   <div class="nav-links">
     <button class="nav-link active" onclick="showPage('home')">Home</button>
     <button class="nav-link" onclick="showPage('orders')">My Orders</button>
+
     <!-- Fan Favourite dropdown -->
     <div class="nav-dropdown">
       <button class="nav-link" id="nav-fanfav-btn">Fan Favourite ▾</button>
@@ -25,6 +695,7 @@
         <!-- filled by renderFanFavDropdown() -->
       </div>
     </div>
+
     <button class="nav-link" onclick="showPage('flavors')">Flavors</button>
   </div>
   <div class="nav-right">
@@ -37,6 +708,7 @@
     </button>
   </div>
 </nav>
+
 <!-- ══════════════ HOME PAGE ══════════════ -->
 <div class="page active" id="page-home">
   <section class="hero">
@@ -59,6 +731,7 @@
       <div class="hero-card" id="hero-feature-card"></div>
     </div>
   </section>
+
   <div class="search-strip">
     <div class="search-strip-inner">
       <div class="search-wrap">
@@ -75,6 +748,7 @@
       </select>
     </div>
   </div>
+
   <div class="section" id="recipe-section">
     <div class="section-head">
       <div>
@@ -84,6 +758,7 @@
     </div>
     <div class="recipe-grid" id="recipe-grid"></div>
   </div>
+
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">🍳 CookNest</div>
@@ -97,6 +772,7 @@
     </div>
   </footer>
 </div>
+
 <!-- ══════════════ CART PAGE ══════════════ -->
 <div class="page" id="page-cart">
   <div class="cart-layout">
@@ -107,6 +783,7 @@
     <div id="cart-sidebar"></div>
   </div>
 </div>
+
 <!-- ══════════════ ORDERS PAGE ══════════════ -->
 <div class="page" id="page-orders">
   <div class="orders-page">
@@ -114,6 +791,7 @@
     <div id="orders-list"></div>
   </div>
 </div>
+
 <!-- ══════════════ FAN FAVOURITE EDITOR PAGE ══════════════ -->
 <div class="page" id="page-fanfav">
   <div class="fan-fav-page">
@@ -131,11 +809,13 @@
     </div>
   </div>
 </div>
+
 <!-- ══════════════ FLAVORS PAGE ══════════════ -->
 <div class="page" id="page-flavors">
   <div class="flavors-page">
     <h2>Our Flavors</h2>
     <p class="page-sub">Every kit is crafted around a signature flavor profile. Find the taste that speaks to you.</p>
+
     <div class="flavor-intro">
       <div class="flavor-intro-emoji">🌶️</div>
       <div class="flavor-intro-text">
@@ -143,6 +823,7 @@
         <p>Each CookNest flavor family is a curated collection of recipes sharing the same soul — ingredients, techniques, and the feeling they leave behind. Explore them all or start with your favorite.</p>
       </div>
     </div>
+
     <div class="flavor-grid">
       <div class="flavor-card" onclick="setFilter('Filipino');showPage('home')">
         <div class="flavor-card-header" style="background:linear-gradient(135deg,#3D1F0A,#B85A18)">🍗<span class="flavor-label">Filipino</span></div>
@@ -156,6 +837,7 @@
           </div>
         </div>
       </div>
+
       <div class="flavor-card" onclick="setFilter('Italian');showPage('home')">
         <div class="flavor-card-header" style="background:linear-gradient(135deg,#1a3a1a,#4a7a2a)">🍝<span class="flavor-label">Italian</span></div>
         <div class="flavor-card-body">
@@ -168,6 +850,7 @@
           </div>
         </div>
       </div>
+
       <div class="flavor-card" onclick="setFilter('Asian');showPage('home')">
         <div class="flavor-card-header" style="background:linear-gradient(135deg,#1a1a3a,#2a4a7a)">🍛<span class="flavor-label">Asian</span></div>
         <div class="flavor-card-body">
@@ -180,6 +863,7 @@
           </div>
         </div>
       </div>
+
       <div class="flavor-card" onclick="setFilter('Healthy');showPage('home')">
         <div class="flavor-card-header" style="background:linear-gradient(135deg,#1a3a2a,#2a6a3a)">🥗<span class="flavor-label">Healthy</span></div>
         <div class="flavor-card-body">
@@ -192,6 +876,7 @@
           </div>
         </div>
       </div>
+
       <div class="flavor-card" onclick="setFilter('Dessert');showPage('home')">
         <div class="flavor-card-header" style="background:linear-gradient(135deg,#3a1a3a,#7a2a6a)">🍮<span class="flavor-label">Dessert</span></div>
         <div class="flavor-card-body">
@@ -204,6 +889,7 @@
           </div>
         </div>
       </div>
+
       <div class="flavor-card" onclick="setFilter('Western');showPage('home')">
         <div class="flavor-card-header" style="background:linear-gradient(135deg,#2a1a0a,#6a3a1a)">🥩<span class="flavor-label">Western</span></div>
         <div class="flavor-card-body">
@@ -219,6 +905,7 @@
     </div>
   </div>
 </div>
+
 <!-- ══════════════ RECIPE MODAL ══════════════ -->
 <div class="overlay" id="recipe-overlay" onclick="maybeCloseModal(event)">
   <div class="modal-sheet" id="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -240,37 +927,44 @@
       </div>
       <div class="modal-section-label">Reviews</div>
 <div class="comment-list" id="m-comments">
+
   <div class="comment-item">
     <div class="comment-author">Maria Santos</div>
     <div class="comment-text">
       ⭐⭐⭐⭐⭐ Very delicious and easy to follow.
     </div>
   </div>
+
   <div class="comment-item">
     <div class="comment-author">John Cruz</div>
     <div class="comment-text">
       ⭐⭐⭐⭐ Perfect for family dinner.
     </div>
   </div>
+
   <div class="comment-item">
     <div class="comment-author">Anna Reyes</div>
     <div class="comment-text">
       ⭐⭐⭐⭐⭐ We thoroughly enjoyed this recipe and my family loved it.
     </div>
   </div>
+
   <div class="comment-item">
     <div class="comment-author">Mark Villanueva</div>
     <div class="comment-text">
       ⭐⭐⭐⭐⭐ I made this for a family gathering last night. The instructions were incredibly straightforward and easy to follow.
     </div>
   </div>
+
   <div class="comment-item">
     <div class="comment-author">Sofia Garcia</div>
     <div class="comment-text">
       ⭐⭐⭐⭐ Step-by-step instructions were clear, perfect for beginners.
     </div>
   </div>
+
 </div>
+
 <div class="comment-input-row" style="margin-top:14px">
         <input class="comment-name-input" type="text" id="c-name" placeholder="Your name">
         <input class="comment-text-input" type="text" id="c-text" placeholder="Share your experience…" onkeydown="if(event.key==='Enter')postComment()">
@@ -287,6 +981,7 @@
     </div>
   </div>
 </div>
+
 <!-- ══════════════ CHECKOUT OVERLAY ══════════════ -->
 <div class="checkout-overlay" id="checkout-overlay" onclick="maybeCloseCheckout(event)">
   <div class="checkout-panel" style="position:relative">
@@ -311,6 +1006,7 @@
     <button class="btn-place" onclick="placeOrder()">✓ Place Order</button>
   </div>
 </div>
+
 <!-- ══════════════ LOGIN OVERLAY ══════════════ -->
 <div class="login-overlay" id="login-overlay" onclick="maybeCloseLogin(event)">
   <div class="login-panel">
@@ -325,6 +1021,7 @@
       <button class="login-tab active" onclick="switchLoginTab('login',this)">Sign In</button>
       <button class="login-tab" onclick="switchLoginTab('register',this)">Create Account</button>
     </div>
+
     <!-- Sign In form -->
     <div class="login-form-panel active" id="tab-login">
       <div class="form-group"><label>Email</label><input type="email" id="li-email" placeholder="juan@email.com"></div>
@@ -333,6 +1030,7 @@
       <div class="login-divider">or continue as guest</div>
       <button class="btn-login-submit" style="background:var(--paper-2);color:var(--ink-2);border:1.5px solid var(--paper-3)" onclick="doGuestLogin()">👤 Browse as Guest</button>
     </div>
+
     <!-- Register form -->
     <div class="login-form-panel" id="tab-register">
       <div class="form-row">
@@ -345,7 +1043,518 @@
     </div>
   </div>
 </div>
+
 <!-- ══════════════ TOAST ══════════════ -->
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ── DATA ──────────────────────────────────────── */
+const K={R:'cn_recipes',C:'cn_cart',O:'cn_orders',W:'cn_wish',CM:'cn_comments',FF:'cn_fanfav',US:'cn_users',CU:'cn_currentuser'};
+const DEFAULTS=[
+  {id:1,title:'Spaghetti Bolognese',cat:'Italian',emoji:'🍝',desc:'Rich meat sauce over al dente spaghetti — a timeless Italian staple perfected over hours.',ing:['500g ground beef','400g spaghetti','800g canned tomatoes','1 large onion','3 cloves garlic','2 tbsp olive oil','Salt & black pepper'],steps:['Bring a large pot of salted water to a boil and cook pasta until al dente. Drain and set aside.','Dice onion and mince garlic. Sauté in olive oil over medium heat until softened and fragrant, about 5 minutes.','Add ground beef to the pan. Break apart with a wooden spoon and cook until fully browned.','Pour in canned tomatoes, season generously with salt and pepper. Stir well and reduce heat.','Simmer the sauce uncovered for at least 20 minutes, stirring occasionally, until thickened.','Toss pasta with sauce. Serve topped with freshly grated parmesan and torn basil.'],price:199,rating:5.0,reviews:3,added:'2024-01-10'},
+  {id:2,title:'Chicken Curry',cat:'Asian',emoji:'🍛',desc:'Aromatic coconut-based curry with tender chicken, warming spices and silky sauce.',ing:['500g chicken breast','400ml coconut milk','2 tbsp curry powder','1 onion','3 cloves garlic','1 tbsp fresh ginger','2 tbsp neutral oil','Salt to taste'],steps:['Heat oil in a deep pan. Sauté diced onion, garlic, and grated ginger over medium heat until golden.','Add chicken pieces and sear until sealed on all sides — don\'t stir too much so it colours nicely.','Stir in curry powder and cook for 60 seconds to bloom the spices.','Pour in coconut milk. Stir to combine and scrape up any browned bits from the bottom.','Simmer uncovered on low heat for 20 minutes until chicken is cooked through and sauce is thick.','Season with salt, serve over steamed jasmine rice with fresh coriander.'],price:179,rating:5.0,reviews:3,added:'2024-01-15'},
+  {id:3,title:'Chicken Adobo',cat:'Filipino',emoji:'🍗',desc:'The national dish of the Philippines — tangy, savoury, and deeply satisfying with every bite.',ing:['1kg chicken pieces','½ cup soy sauce','¼ cup white cane vinegar','1 head garlic (crushed)','2 bay leaves','1 tsp black peppercorns','2 tbsp cooking oil','1 tsp sugar (optional)'],steps:['Combine chicken with soy sauce and vinegar in a bowl. Marinate for at least 30 minutes (overnight is better).','Heat oil in a wide pan over medium-high heat. Sauté the crushed garlic until golden and fragrant.','Add the marinated chicken along with all the marinade liquid, bay leaves, and peppercorns.','Bring to a boil, then reduce heat and simmer uncovered for 30 minutes, turning chicken halfway.','Optional: Remove chicken and pan-fry in a separate pan to caramelize and crisp the skin.','Reduce remaining sauce until slightly syrupy. Pour over chicken and serve with steamed rice.'],price:159,rating:5.0,reviews:3,added:'2024-01-05'},
+  {id:4,title:'Pancit Canton',cat:'Filipino',emoji:'🍜',desc:'Stir-fried egg noodles loaded with vegetables and your choice of pork or chicken.',ing:['250g canton noodles','200g pork belly (sliced thin)','1 cup cabbage (shredded)','1 carrot (julienned)','3 tbsp soy sauce','2 cups chicken broth','2 cloves garlic','Calamansi to serve'],steps:['Blanch canton noodles in boiling water for 2 minutes, drain and set aside.','Sauté garlic in oil, add pork and cook until browned. Season lightly with soy sauce.','Add carrots and cabbage. Stir-fry for 2 minutes until just tender but still crisp.','Pour in chicken broth and remaining soy sauce. Bring to a rolling boil.','Add noodles and toss constantly until all liquid is absorbed and noodles are coated.','Serve with calamansi halves on the side and a dash of patis if desired.'],price:139,rating:5.0,reviews:3,added:'2024-02-01'},
+  {id:5,title:'Caesar Salad',cat:'Healthy',emoji:'🥗',desc:'Crisp romaine with hand-whisked dressing, golden croutons, and aged parmesan.',ing:['1 head romaine lettuce','½ cup Caesar dressing','1 cup croutons','¼ cup parmesan (shaved)','2 tbsp fresh lemon juice','Freshly cracked black pepper'],steps:['Wash romaine thoroughly and spin dry. Tear into generous bite-sized pieces.','Whisk Caesar dressing together with fresh lemon juice until smooth and emulsified.','Add lettuce to a large wide bowl. Pour dressing and toss well to coat every leaf.','Add most of the croutons and parmesan. Toss once more gently.','Transfer to serving plates. Top with remaining croutons, parmesan, and generous black pepper.','Serve immediately — the croutons lose their crunch within minutes.'],price:119,rating:4.7,reviews:3,added:'2024-02-10'},
+  {id:6,title:'Leche Flan',cat:'Dessert',emoji:'🍮',desc:'Classic Filipino caramel custard — silky, burnished, and utterly indulgent.',ing:['10 egg yolks','1 can (300ml) condensed milk','1 can (370ml) evaporated milk','1 tsp vanilla extract','1 cup white sugar (for caramel)','2 tbsp water'],steps:['Combine sugar and water in a heavy llanera over low heat. Do not stir — swirl gently until a deep amber caramel forms. Remove from heat.','Let caramel cool slightly and harden in the llanera. It will crack slightly as you tilt it — this is fine.','Whisk egg yolks in a bowl until smooth. Add condensed milk, evaporated milk, and vanilla. Whisk until combined.','Strain the custard mixture twice through a fine-mesh sieve to remove bubbles and chalazae.','Pour carefully over the set caramel. Cover tightly with foil.','Steam over low-medium heat for 45 minutes, or bake in a water bath at 160°C for 50 minutes. A toothpick should come out clean.'],price:129,rating:5.0,reviews:3,added:'2024-01-20'}
+];
+
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+
+let recipes=load(K.R,DEFAULTS);
+let cart=load(K.C,[]);
+let orders=load(K.O,[]);
+let wishlist=load(K.W,[]);
+let comments=load(K.CM,{});
+
+if(Object.keys(comments).length===0){
+  comments = {
+
+1: [
+  {name:"Jericho", text:"⭐⭐⭐⭐⭐ A must-try if you want to upgrade your usual weekend dinner."},
+  {name:"Mayumi", text:"⭐⭐⭐⭐⭐ Tastes like it came from a high-end Italian restaurant! The meat sauce is incredibly rich and savory."},
+  {name:"Arnel", text:"⭐⭐⭐⭐⭐ I didn't expect to be able to make pasta this good at home for only ₱199."}
+],
+
+2: [
+  {name:"Carmela", text:"⭐⭐⭐⭐⭐ It smells super aromatic while cooking."},
+  {name:"Carlo", text:"⭐⭐⭐⭐⭐ Will definitely make you want a second serving of rice! 🍛 10/10"},
+  {name:"Isabella", text:"⭐⭐⭐⭐⭐ We thoroughly enjoyed this recipe and my family loved it."}
+],
+
+3: [
+  {name:"Jonalyn", text:"⭐⭐⭐⭐⭐ Step-by-step instructions were clear, perfect for beginners."},
+  {name:"Sharmaine", text:"⭐⭐⭐⭐⭐ I made this for a family gathering last night. The instructions were incredibly straightforward and easy to follow."},
+  {name:"Vanessa", text:"⭐⭐⭐⭐⭐ Reminds me of my mom's recipe."}
+],
+
+4: [
+  {name:"Rowena", text:"⭐⭐⭐⭐⭐ It tastes exactly like the classic pancit you get at family reunions."},
+  {name:"Melanie", text:"⭐⭐⭐⭐⭐ Authentic Pinoy flavor!"},
+  {name:"Claudia", text:"⭐⭐⭐⭐⭐ Great for celebrations and family gatherings."}
+],
+
+5: [
+  {name:"Jennie", text:"⭐⭐⭐⭐⭐ Perfect for a quick, healthy lunch."},
+  {name:"Jericho", text:"⭐⭐⭐⭐ A solid, classic Caesar."},
+  {name:"Mayumi", text:"⭐⭐⭐⭐⭐ Feeling rich kid for today's lunch! Super easy to prepare."}
+],
+
+6: [
+  {name:"Arnel", text:"⭐⭐⭐⭐⭐ This is by far the best Leche Flan recipe I've tried."},
+  {name:"Carmela", text:"⭐⭐⭐⭐⭐ It tastes exactly like the classic Filipino dessert my grandmother used to make for family fiestas."},
+  {name:"Carlo", text:"⭐⭐⭐⭐⭐ My in-laws are tough critics when it comes to Filipino desserts, but this Leche Flan completely won them over."}
+]
+
+  };
+}
+
+
+let fanFavId=load(K.FF,3); // default: Chicken Adobo
+let users=load(K.US,[]);   // [{name,email,password}]
+let currentUser=load(K.CU,null);
+let currentFilter='All';
+let currentSort='default';
+let activeRecipe=null;
+let selectedPay='GCash';
+let pendingFanFavId=fanFavId;
+
+/* ── AUTH ──────────────────────────────────────── */
+function renderAuthArea(){
+  const el=document.getElementById('nav-auth-area');
+  if(currentUser){
+    const initials=currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    el.innerHTML=`
+      <div class="nav-user-pill">
+        <div class="nav-user-avatar">${initials}</div>
+        <span class="nav-user-name">${currentUser.name.split(' ')[0]}</span>
+        <button class="nav-logout" onclick="doLogout()">Sign out</button>
+      </div>`;
+  } else {
+    el.innerHTML=`<button class="nav-auth" onclick="openLogin()">👤 Sign in</button>`;
+  }
+}
+
+function openLogin(){
+  document.getElementById('login-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLogin(){
+  document.getElementById('login-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function maybeCloseLogin(e){if(e.target===document.getElementById('login-overlay'))closeLogin()}
+function switchLoginTab(tab,btn){
+  document.querySelectorAll('.login-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.login-form-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='login'){
+    document.getElementById('login-panel-title').textContent='Welcome back';
+    document.getElementById('login-panel-sub').textContent='Sign in to track orders and save favourites.';
+  } else {
+    document.getElementById('login-panel-title').textContent='Join CookNest';
+    document.getElementById('login-panel-sub').textContent='Create an account to get started.';
+  }
+}
+function doLogin(){
+  const email=document.getElementById('li-email').value.trim().toLowerCase();
+  const pass=document.getElementById('li-pass').value;
+  const user=users.find(u=>u.email===email&&u.password===pass);
+  if(!user){showToast('Incorrect email or password','error');return}
+  currentUser=user;save(K.CU,currentUser);
+  closeLogin();renderAuthArea();
+  showToast('Welcome back, '+user.name.split(' ')[0]+'! 👋','success');
+}
+function doGuestLogin(){
+  closeLogin();
+  showToast('Browsing as guest');
+}
+function doRegister(){
+  const fname=document.getElementById('reg-fname').value.trim();
+  const lname=document.getElementById('reg-lname').value.trim();
+  const email=document.getElementById('reg-email').value.trim().toLowerCase();
+  const pass=document.getElementById('reg-pass').value;
+  if(!fname||!lname||!email||!pass){showToast('Please fill in all fields','error');return}
+  if(users.find(u=>u.email===email)){showToast('An account with that email already exists','error');return}
+  if(pass.length<6){showToast('Password must be at least 6 characters','error');return}
+  const newUser={name:fname+' '+lname,email,password:pass};
+  users.push(newUser);save(K.US,users);
+  currentUser=newUser;save(K.CU,currentUser);
+  closeLogin();renderAuthArea();
+  showToast('Account created! Welcome, '+fname+' 🎉','success');
+}
+function doLogout(){
+  currentUser=null;save(K.CU,null);
+  renderAuthArea();
+  showToast('Signed out. See you next time!');
+}
+
+/* ── FAN FAVOURITE ─────────────────────────────── */
+function renderHeroFanFav(){
+  const r=recipes.find(x=>x.id===fanFavId)||recipes[0];
+  if(!r)return;
+  document.getElementById('hero-feature-card').innerHTML=`
+    <div class="hero-card-img">${r.emoji||'🍴'}<span class="hero-card-badge">⭐ Fan favourite</span></div>
+    <div class="hero-card-body">
+      <div class="hero-card-tag">${r.cat}</div>
+      <div class="hero-card-title">${r.title}</div>
+      <div class="hero-card-desc">${r.desc}</div>
+      <div class="hero-card-row">
+        <div class="hero-card-price">₱${r.price} <span>/ kit</span></div>
+        <button class="btn-ember" style="padding:10px 18px;font-size:13px" onclick="addToCartId(${r.id})">Add to cart</button>
+      </div>
+    </div>`;
+}
+
+function renderFanFavDropdown(){
+  const dropdown=document.getElementById('fanfav-dropdown');
+  const r=recipes.find(x=>x.id===fanFavId);
+  const currentName=r?r.title:'—';
+  dropdown.innerHTML=`
+    <div style="padding:10px 18px 6px;font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:0.5px;text-transform:uppercase">Current</div>
+    <div style="padding:6px 18px 10px;font-size:13px;color:rgba(255,255,255,0.75);border-bottom:1px solid rgba(255,255,255,0.06)">${r?r.emoji:''} ${currentName}</div>
+    <button class="nav-dropdown-item" onclick="showPage('fanfav')">⭐ Change fan favourite</button>
+    <button class="nav-dropdown-item" onclick="openRecipe(${fanFavId})">👁 View recipe</button>
+    <button class="nav-dropdown-item" onclick="addToCartId(${fanFavId})">🛒 Add to cart</button>`;
+}
+
+function renderFanFavPage(){
+  pendingFanFavId=fanFavId;
+  const list=document.getElementById('fanfav-recipe-list');
+  list.innerHTML=recipes.map(r=>`
+    <div class="fan-fav-recipe-option${r.id===pendingFanFavId?' selected':''}" onclick="selectFanFav(${r.id},this)">
+      <div class="fan-fav-opt-emoji">${r.emoji||'🍴'}</div>
+      <div class="fan-fav-opt-info">
+        <div class="fan-fav-opt-title">${r.title}</div>
+        <div class="fan-fav-opt-cat">${r.cat} · ₱${r.price} · ★${r.rating}</div>
+      </div>
+      <span class="fan-fav-check">✓</span>
+    </div>`).join('');
+  updateFanFavPreview();
+}
+function selectFanFav(id,el){
+  pendingFanFavId=id;
+  document.querySelectorAll('.fan-fav-recipe-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  updateFanFavPreview();
+}
+function updateFanFavPreview(){
+  const r=recipes.find(x=>x.id===pendingFanFavId)||recipes[0];
+  document.getElementById('fanfav-preview').innerHTML=`
+    <div class="fan-fav-preview-emoji">${r.emoji||'🍴'}</div>
+    <div class="fan-fav-preview-info">
+      <span class="fan-fav-preview-badge">⭐ Fan Favourite</span>
+      <div class="fan-fav-preview-title">${r.title}</div>
+      <div class="fan-fav-preview-cat">${r.cat} · ₱${r.price} / kit</div>
+    </div>`;
+}
+function saveFanFav(){
+  fanFavId=pendingFanFavId;
+  save(K.FF,fanFavId);
+  renderHeroFanFav();
+  renderFanFavDropdown();
+  showToast('Fan favourite updated! ⭐','success');
+  showPage('home');
+}
+
+/* ── PAGES ─────────────────────────────────────── */
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(el=>el.classList.remove('active'));
+  const map={home:0,orders:1};
+  if(map[p]!==undefined) document.querySelectorAll('.nav-link')[map[p]].classList.add('active');
+  if(p==='cart')renderCart();
+  if(p==='orders')renderOrders();
+  if(p==='fanfav')renderFanFavPage();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── FILTERS + GRID ─────────────────────────────── */
+function getFiltered(){
+  const q=document.getElementById('search-input').value.toLowerCase().trim();
+  let r=[...recipes];
+  if(currentFilter!=='All')r=r.filter(x=>x.cat===currentFilter);
+  if(q)r=r.filter(x=>x.title.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q)||x.desc.toLowerCase().includes(q));
+  if(currentSort==='rating')r.sort((a,b)=>b.rating-a.rating);
+  else if(currentSort==='name')r.sort((a,b)=>a.title.localeCompare(b.title));
+  else if(currentSort==='price-asc')r.sort((a,b)=>a.price-b.price);
+  else if(currentSort==='price-desc')r.sort((a,b)=>b.price-a.price);
+  return r;
+}
+function starsHtml(r){
+  const f=Math.round(r);
+  return '<span class="stars">'+'★'.repeat(f)+'☆'.repeat(5-f)+'</span>';
+}
+function renderFilters(){
+  const cats=['All',...new Set(recipes.map(r=>r.cat))];
+  document.getElementById('filter-pills').innerHTML=cats.map(c=>`<button class="filter-pill${c===currentFilter?' active':''}" onclick="setFilter('${c}')">${c}</button>`).join('');
+}
+function setFilter(f){currentFilter=f;renderFilters();renderGrid()}
+function renderGrid(){
+  const r=getFiltered();
+  document.getElementById('grid-count').textContent=r.length+' recipe'+(r.length!==1?'s':'');
+  if(!r.length){
+    document.getElementById('recipe-grid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--ink-3)"><div style="font-size:48px;margin-bottom:12px">🍽️</div><div style="font-family:var(--font-display);font-size:20px;color:var(--ink);margin-bottom:6px">No recipes found</div><div style="font-size:14px;font-weight:300">Try a different search or filter</div></div>';
+    return;
+  }
+  document.getElementById('recipe-grid').innerHTML=r.map(rec=>`
+    <div class="recipe-card" onclick="openRecipe(${rec.id})">
+      <div class="recipe-card-thumb">
+        ${rec.emoji||'🍴'}
+        <button class="recipe-card-wish${wishlist.includes(rec.id)?' wishlisted':''}" onclick="event.stopPropagation();toggleWishId(${rec.id})" aria-label="Wishlist">
+          ${wishlist.includes(rec.id)?'♥':'♡'}
+        </button>
+      </div>
+      <div class="recipe-card-body">
+        <div class="recipe-card-cat">${rec.cat}</div>
+        <div class="recipe-card-title">${rec.title}</div>
+        <div class="recipe-card-desc">${rec.desc}</div>
+        <div class="recipe-card-foot">
+          <div class="stars-row">${starsHtml(rec.rating)}<span class="stars-count">(${rec.reviews})</span></div>
+          <div class="recipe-card-price-wrap">
+            <span class="recipe-card-price">₱${rec.price}</span>
+            <button class="btn-add-card" onclick="event.stopPropagation();addToCartId(${rec.id})">+ Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── MODAL ──────────────────────────────────────── */
+function openRecipe(id){
+  const r=recipes.find(x=>x.id===id);
+  if(!r)return;
+  activeRecipe=r;
+  document.getElementById('m-cat').textContent=r.cat;
+  document.getElementById('modal-title').textContent=r.title;
+  document.getElementById('m-price').textContent='₱'+r.price;
+  document.getElementById('m-thumb').innerHTML=`<div class="modal-thumb">${r.emoji||'🍴'}<span class="modal-badge">${starsHtml(r.rating)} ${r.rating}</span></div>`;
+  document.getElementById('m-meta-row').innerHTML=`
+    <div class="modal-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>${r.reviews} reviews</div>
+    <div class="modal-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H3"/><path d="M7 2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7"/><path d="M11 5h1a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1"/><path d="M3 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>${r.ing.length} ingredients</div>
+    <div class="modal-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${r.steps.length} steps</div>`;
+  document.getElementById('m-ing').innerHTML=r.ing.map(i=>`<div class="ing-chip">${i}</div>`).join('');
+  document.getElementById('m-steps').innerHTML=r.steps.map((s,i)=>`<div class="step-item"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join('');
+  const wb=document.getElementById('btn-wish-big');
+  const w=wishlist.includes(id);
+  wb.textContent=w?'♥':'♡';
+  wb.classList.toggle('wishlisted',w);
+  renderModalComments(id);
+  document.getElementById('recipe-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  fetchAITip(r);
+}
+function closeRecipeModal(){
+  document.getElementById('recipe-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function maybeCloseModal(e){if(e.target===document.getElementById('recipe-overlay'))closeRecipeModal()}
+
+async function fetchAITip(r){
+  const el=document.getElementById('ai-tip');
+  el.className='ai-box-text loading';
+  el.textContent='Generating personalised tips…';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',max_tokens:1000,
+        system:'You are a warm, knowledgeable chef. Give 2-3 short practical cooking tips for the recipe. Plain text only, no markdown, no bullet points, no asterisks. Keep it under 80 words. Be specific and useful.',
+        messages:[{role:'user',content:`Tips for making ${r.title}. Key ingredients: ${r.ing.slice(0,4).join(', ')}.`}]
+      })
+    });
+    const d=await res.json();
+    const txt=d.content?.find(c=>c.type==='text')?.text||'';
+    el.className='ai-box-text';
+    el.textContent=txt||'Chef tips unavailable right now.';
+  }catch{
+    el.className='ai-box-text';
+    el.textContent='Chef tips unavailable — please check your connection.';
+  }
+}
+
+/* ── COMMENTS ───────────────────────────────────── */
+function renderModalComments(id){
+  const list=comments[id]||[];
+  const el=document.getElementById('m-comments');
+  el.innerHTML=list.length
+    ?list.map(c=>`<div class="comment-item"><div class="comment-author">${c.name}</div><div class="comment-text">${c.text}</div></div>`).join('')
+    :'<div style="font-size:13px;color:var(--ink-3);font-style:italic;padding:8px 0">No reviews yet — be the first!</div>';
+}
+function postComment(){
+  const name=document.getElementById('c-name').value.trim()||'Anonymous';
+  const text=document.getElementById('c-text').value.trim();
+  if(!text)return;
+  const id=activeRecipe.id;
+  if(!comments[id])comments[id]=[];
+  comments[id].unshift({name,text});
+  save(K.CM,comments);
+  document.getElementById('c-text').value='';
+  renderModalComments(id);
+  showToast('Review posted!','success');
+}
+
+/* ── WISHLIST ───────────────────────────────────── */
+function toggleWish(){if(activeRecipe)toggleWishId(activeRecipe.id)}
+function toggleWishId(id){
+  const i=wishlist.indexOf(id);
+  i===-1?wishlist.push(id):wishlist.splice(i,1);
+  save(K.W,wishlist);
+  renderGrid();
+  if(activeRecipe&&activeRecipe.id===id){
+    const w=wishlist.includes(id);
+    const wb=document.getElementById('btn-wish-big');
+    wb.textContent=w?'♥':'♡';
+    wb.classList.toggle('wishlisted',w);
+  }
+  showToast(wishlist.includes(id)?'Added to wishlist ♥':'Removed from wishlist');
+}
+
+/* ── CART ───────────────────────────────────────── */
+function addToCartId(id){
+  const r=recipes.find(x=>x.id===id);if(!r)return;
+  const ex=cart.find(x=>x.id===id);
+  ex?ex.qty++:cart.push({id,title:r.title,cat:r.cat,emoji:r.emoji,price:r.price,qty:1});
+  save(K.C,cart);updateCartCount();showToast(r.title+' added to cart','success');
+}
+function addToCartFromModal(){addToCartId(activeRecipe.id);closeRecipeModal()}
+function updateCartCount(){
+  document.getElementById('cart-count').textContent=cart.reduce((a,b)=>a+b.qty,0);
+}
+function changeQty(id,d){
+  const i=cart.findIndex(x=>x.id===id);if(i===-1)return;
+  cart[i].qty+=d;
+  if(cart[i].qty<=0)cart.splice(i,1);
+  save(K.C,cart);updateCartCount();renderCart();
+}
+function renderCart(){
+  const el=document.getElementById('cart-items');
+  const sb=document.getElementById('cart-sidebar');
+  if(!cart.length){
+    el.innerHTML=`<div class="empty-cart"><div class="empty-icon">🛒</div><div class="empty-title">Your cart is empty</div><div class="empty-sub">Browse recipes and add your favourites.</div><button class="btn-browse" onclick="showPage('home')">Browse recipes →</button></div>`;
+    sb.innerHTML='';return;
+  }
+  el.innerHTML=cart.map(item=>`
+    <div class="cart-item">
+      <div class="cart-emoji">${item.emoji||'🍴'}</div>
+      <div class="cart-info">
+        <div class="cart-item-name">${item.title}</div>
+        <div class="cart-item-cat">${item.cat} · ₱${item.price} each</div>
+        <div class="qty-wrap">
+          <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="cart-item-price">₱${item.price*item.qty}</div>
+        <button class="btn-rm" onclick="changeQty(${item.id},-999)" aria-label="Remove">×</button>
+      </div>
+    </div>
+  `).join('');
+  const sub=cart.reduce((a,b)=>a+b.price*b.qty,0);
+  const delivery=49;
+  sb.innerHTML=`
+    <div class="order-summary-card">
+      <div class="summary-title">Order Summary</div>
+      ${cart.map(i=>`<div class="summary-row"><span>${i.emoji} ${i.title} ×${i.qty}</span><span>₱${i.price*i.qty}</span></div>`).join('')}
+      <div class="summary-divider"></div>
+      <div class="summary-row"><span>Subtotal</span><span>₱${sub}</span></div>
+      <div class="summary-row"><span>Delivery</span><span>₱${delivery}</span></div>
+      <div class="summary-divider"></div>
+      <div class="summary-total"><span>Total</span><span>₱${sub+delivery}</span></div>
+      <button class="btn-checkout" onclick="openCheckout()">Proceed to checkout →</button>
+    </div>`;
+}
+
+/* ── CHECKOUT ───────────────────────────────────── */
+function openCheckout(){
+  const sub=cart.reduce((a,b)=>a+b.price*b.qty,0);
+  document.getElementById('co-recap').innerHTML=
+    `<div style="font-size:12px;font-weight:500;color:var(--ink-3);margin-bottom:10px;letter-spacing:0.4px;text-transform:uppercase">Order recap</div>`+
+    cart.map(i=>`<div class="recap-line"><span>${i.emoji} ${i.title} ×${i.qty}</span><span>₱${i.price*i.qty}</span></div>`).join('')+
+    `<div class="recap-total"><span>Total (incl. ₱49 delivery)</span><span>₱${sub+49}</span></div>`;
+  // prefill from current user
+  if(currentUser){
+    const parts=currentUser.name.split(' ');
+    document.getElementById('co-fname').value=parts[0]||'';
+    document.getElementById('co-lname').value=parts.slice(1).join(' ')||'';
+    document.getElementById('co-email').value=currentUser.email||'';
+  }
+  document.getElementById('checkout-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeCheckout(){
+  document.getElementById('checkout-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function maybeCloseCheckout(e){if(e.target===document.getElementById('checkout-overlay'))closeCheckout()}
+function selectPay(el){
+  document.querySelectorAll('.pay-method').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPay=el.dataset.pay;
+}
+function placeOrder(){
+  const fname=document.getElementById('co-fname').value.trim();
+  const lname=document.getElementById('co-lname').value.trim();
+  const email=document.getElementById('co-email').value.trim();
+  const addr=document.getElementById('co-addr').value.trim();
+  if(!fname||!lname||!email||!addr){showToast('Please fill in all fields','error');return}
+  const sub=cart.reduce((a,b)=>a+b.price*b.qty,0);
+  orders.unshift({
+    id:'CN-'+Date.now(),items:[...cart],total:sub+49,
+    name:fname+' '+lname,email,addr,payment:selectedPay,
+    status:'Confirmed',date:new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'})
+  });
+  save(K.O,orders);
+  cart=[];save(K.C,cart);updateCartCount();
+  closeCheckout();
+  showPage('orders');
+  showToast('🎉 Order placed successfully!','success');
+}
+
+/* ── ORDERS ─────────────────────────────────────── */
+function renderOrders(){
+  const el=document.getElementById('orders-list');
+  if(!orders.length){
+    el.innerHTML='<div class="empty-cart"><div class="empty-icon">📦</div><div class="empty-title">No orders yet</div><div class="empty-sub">Place your first order to see it here.</div><button class="btn-browse" onclick="showPage(\'home\')">Browse recipes →</button></div>';
+    return;
+  }
+  el.innerHTML=orders.map(o=>`
+    <div class="order-card">
+      <div class="order-head">
+        <div><div class="order-id">${o.id}</div><div class="order-date">${o.date}</div></div>
+        <span class="order-status">✓ ${o.status}</span>
+      </div>
+      <div class="order-items-row">${o.items.map(i=>`<span class="order-item-chip">${i.emoji} ${i.title} ×${i.qty}</span>`).join('')}</div>
+      <div class="order-foot">
+        <span class="order-pay-method">Paid via ${o.payment}</span>
+        <span class="order-total">₱${o.total}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── TOAST ──────────────────────────────────────── */
+let _tt;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  clearTimeout(_tt);_tt=setTimeout(()=>t.className='toast',2800);
+}
+
+/* ── INIT ───────────────────────────────────────── */
+renderFilters();
+renderGrid();
+updateCartCount();
+renderAuthArea();
+renderHeroFanFav();
+renderFanFavDropdown();
+</script>
 </body>
 </html>
