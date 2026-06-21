@@ -342,17 +342,7 @@ app.listen(process.env.PORT || 5000, () => {
   console.log(`Server running on port ${process.env.PORT || 5000}`);
 });
 
-
-const cors = require('cors');
-require('dotenv').config();
-
-
-app.use(cors());
-app.use(express.json());
-
 // mount signup route
 app.use(require('./signup'));
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`Server running on port ${process.env.PORT || 5000}`);
-});
+
