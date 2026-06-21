@@ -23,8 +23,6 @@
   --gold-pale:#FDF6E3;
   --leaf:#2E6B40;
   --leaf-pale:#EAF3EE;
-  --red:#B3261E;
-  --red-pale:#FBEAE9;
   --radius-sm:6px;
   --radius-md:12px;
   --radius-lg:20px;
@@ -676,149 +674,12 @@ footer{background:var(--ink);padding:40px;margin-top:40px}
 @media(prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
 }
-
-/* ══════════════════════════════════════════════════
-   ADMIN DASHBOARD (scoped under .admin-page)
-   ══════════════════════════════════════════════════ */
-.admin-page.active{display:flex;padding-top:0}
-.admin-sidebar{
-  width:230px;flex-shrink:0;background:var(--ink);color:#fff;
-  display:flex;flex-direction:column;padding:24px 16px;position:sticky;top:0;height:100vh;
-}
-.admin-sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 26px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:18px}
-.admin-sb-mark{width:32px;height:32px;background:var(--ember);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
-.admin-sb-name{font-family:var(--font-display);font-size:18px}
-.admin-sb-tag{font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
-.admin-sb-nav{display:flex;flex-direction:column;gap:2px;flex:1}
-.admin-sb-link{
-  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);
-  color:rgba(255,255,255,0.6);font-size:13.5px;border:none;background:transparent;width:100%;text-align:left;
-  transition:all var(--t-fast);font-family:var(--font-body);cursor:pointer;
-}
-.admin-sb-link:hover{color:#fff;background:rgba(255,255,255,0.07)}
-.admin-sb-link.active{color:#fff;background:var(--ember)}
-.admin-sb-icon{font-size:15px;width:18px;text-align:center}
-.admin-sb-foot{padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;gap:6px}
-.admin-sb-foot a, .admin-sb-foot button{
-  font-size:12.5px;color:rgba(255,255,255,0.5);padding:8px 12px;border-radius:var(--radius-sm);
-  background:transparent;border:none;text-align:left;transition:all var(--t-fast);font-family:var(--font-body);cursor:pointer;
-}
-.admin-sb-foot a:hover, .admin-sb-foot button:hover{color:#fff;background:rgba(255,255,255,0.07)}
-.admin-sb-user{display:flex;align-items:center;gap:9px;padding:10px 8px;margin-bottom:14px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.05)}
-.admin-sb-user-avatar{width:28px;height:28px;border-radius:50%;background:var(--ember);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.admin-sb-user-name{font-size:13px;color:#fff;font-weight:500}
-.admin-sb-user-badge{font-size:10px;font-weight:600;color:var(--ember-light);background:rgba(212,74,10,0.18);padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:0.4px;margin-left:auto}
-
-.admin-main{flex:1;padding:32px 40px 60px;max-width:1180px}
-.admin-subpage{display:none}
-.admin-subpage.active{display:block;animation:adminFadeIn .25s ease}
-@keyframes adminFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.admin-page-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;gap:16px;flex-wrap:wrap}
-.admin-page-title{font-family:var(--font-display);font-size:30px;color:var(--ink)}
-.admin-page-sub{font-size:13px;color:var(--ink-3);margin-top:4px}
-
-.admin-btn{padding:10px 18px;border-radius:var(--radius-sm);border:none;font-size:13.5px;font-weight:500;transition:all var(--t-fast);font-family:var(--font-body);cursor:pointer}
-.admin-btn-primary{background:var(--ember);color:#fff}
-.admin-btn-primary:hover{background:var(--ember-light)}
-.admin-btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--paper-3)}
-.admin-btn-ghost:hover{border-color:var(--ink-3)}
-.admin-btn-sm{padding:6px 12px;font-size:12px;border-radius:6px}
-.admin-icon-btn{width:30px;height:30px;border-radius:7px;border:1.5px solid var(--paper-3);background:#fff;font-size:13px;display:inline-flex;align-items:center;justify-content:center;transition:all var(--t-fast);cursor:pointer}
-.admin-icon-btn:hover{border-color:var(--ink-3)}
-
-.admin-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:30px}
-.admin-stat-card{background:#fff;border-radius:var(--radius-md);padding:20px 22px;box-shadow:var(--shadow-card)}
-.admin-stat-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px}
-.admin-stat-num{font-family:var(--font-display);font-size:28px;line-height:1;color:var(--ink)}
-.admin-stat-label{font-size:12px;color:var(--ink-3);margin-top:6px}
-
-.admin-section-card{background:#fff;border-radius:var(--radius-md);box-shadow:var(--shadow-card);overflow:hidden;margin-bottom:24px}
-.admin-section-card-head{padding:18px 22px;border-bottom:1px solid var(--paper-2);display:flex;align-items:center;justify-content:space-between}
-.admin-section-card-title{font-size:14.5px;font-weight:500;color:var(--ink)}
-
-.admin-table-wrap{overflow-x:auto}
-.admin-table-wrap table{width:100%;border-collapse:collapse;min-width:560px}
-.admin-table-wrap th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-3);padding:12px 22px;background:var(--paper-2);font-weight:500;white-space:nowrap}
-.admin-table-wrap td{padding:14px 22px;font-size:13.5px;border-top:1px solid var(--paper-2);vertical-align:middle;color:var(--ink)}
-.admin-table-wrap tr:hover td{background:var(--paper-2)}
-.admin-cell-title{font-weight:500;display:flex;align-items:center;gap:8px}
-.admin-cell-emoji{font-size:18px}
-.admin-cell-muted{color:var(--ink-3);font-size:12.5px}
-.admin-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;background:var(--paper-3);color:var(--ink-2)}
-.admin-actions-cell{display:flex;gap:6px}
-
-.admin-status-select{
-  font-size:12px;font-weight:500;padding:5px 10px;border-radius:20px;border:1.5px solid transparent;
-  background:var(--leaf-pale);color:var(--leaf);appearance:none;cursor:pointer;font-family:var(--font-body);
-}
-.admin-status-select[data-status="Cancelled"]{background:var(--red-pale);color:var(--red)}
-.admin-status-select[data-status="Preparing"]{background:var(--gold-pale);color:var(--gold)}
-.admin-status-select[data-status="Out for Delivery"]{background:var(--ember-pale);color:var(--ember)}
-
-.admin-empty-state{padding:60px 20px;text-align:center;color:var(--ink-3)}
-.admin-empty-state-icon{font-size:34px;margin-bottom:10px}
-.admin-empty-state-title{font-size:14px;color:var(--ink-2);font-weight:500;margin-bottom:4px}
-.admin-empty-state-sub{font-size:12.5px}
-
-.admin-order-chips{display:flex;flex-wrap:wrap;gap:6px}
-.admin-order-chip{font-size:11px;background:var(--paper-2);padding:3px 9px;border-radius:20px;color:var(--ink-2)}
-
-.admin-comment-group{margin-bottom:18px}
-.admin-comment-group-head{font-size:13px;font-weight:500;padding:14px 22px;background:var(--paper-2);display:flex;align-items:center;gap:8px;color:var(--ink)}
-.admin-comment-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:14px 22px;border-top:1px solid var(--paper-2)}
-.admin-comment-author{font-size:12.5px;font-weight:500;margin-bottom:3px;color:var(--ink)}
-.admin-comment-text{font-size:13px;color:var(--ink-2);font-style:italic}
-
-.admin-ff-card{display:flex;gap:20px;align-items:center;padding:24px}
-.admin-ff-emoji{width:72px;height:72px;border-radius:var(--radius-md);background:var(--gold-pale);display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
-.admin-ff-title{font-family:var(--font-display);font-size:21px;color:var(--ink)}
-.admin-ff-desc{font-size:13px;color:var(--ink-3);margin-top:4px;max-width:480px}
-.admin-ff-form{display:flex;gap:10px;padding:0 22px 22px;align-items:center}
-
-.admin-modal-overlay{
-  position:fixed;inset:0;background:rgba(26,18,8,0.5);z-index:1100;
-  display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px;
-}
-.admin-modal-overlay.open{display:flex}
-.admin-modal{
-  width:100%;max-width:560px;background:var(--paper);border-radius:var(--radius-lg);
-  padding:30px 32px 32px;box-shadow:var(--shadow-float);
-}
-.admin-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.admin-modal-title{font-family:var(--font-display);font-size:21px;color:var(--ink)}
-.admin-modal-close{width:28px;height:28px;border-radius:8px;border:none;background:var(--paper-3);font-size:14px;cursor:pointer}
-.admin-field{margin-bottom:14px}
-.admin-field label{display:block;font-size:11.5px;color:var(--ink-3);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.4px}
-.admin-field input,.admin-field textarea,.admin-field select{
-  width:100%;padding:10px 12px;border:1.5px solid var(--paper-3);border-radius:var(--radius-sm);
-  font-size:13.5px;background:#fff;outline:none;transition:border-color var(--t-fast);font-family:var(--font-body);color:var(--ink);
-}
-.admin-field input:focus,.admin-field textarea:focus,.admin-field select:focus{border-color:var(--ember)}
-.admin-field textarea{resize:vertical;min-height:64px;line-height:1.5}
-.admin-field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.admin-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
-
-.admin-mobile-bar{display:none;align-items:center;gap:12px;margin-bottom:18px}
-.admin-mobile-bar button{background:var(--ink);color:#fff;border:none;width:36px;height:36px;border-radius:8px;font-size:15px;cursor:pointer}
-
-.nav-admin-btn{
-  font-size:12px;font-weight:500;color:var(--ember);background:var(--ember-pale);
-  padding:6px 12px;border-radius:20px;border:none;cursor:pointer;transition:all var(--t-fast);
-}
-.nav-admin-btn:hover{background:var(--ember);color:#fff}
-
-@media(max-width:860px){
-  .admin-sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform .2s ease;z-index:1200;width:220px}
-  .admin-sidebar.open{transform:none}
-  .admin-main{padding:20px 18px 60px;width:100%}
-  .admin-mobile-bar{display:flex}
-}
 </style>
 </head>
 <body>
 
 <!-- ── NAV ── -->
-<nav class="nav" id="storefront-nav">
+<nav class="nav">
   <div class="nav-brand" onclick="showPage('home')">
     <div class="nav-brand-mark">🍳</div>
     <span class="nav-brand-name">CookNest</span>
@@ -857,7 +718,7 @@ footer{background:var(--ink);padding:40px;margin-top:40px}
         <h1 class="hero-headline">Cook something<br><em>unforgettable</em><br>tonight.</h1>
         <p class="hero-sub">Curated recipe kits with pre-portioned ingredients, step-by-step guides, and chef tips — from Filipino classics to global favourites.</p>
         <div class="hero-actions">
-          <button class="btn-ember" onclick="goToRecipes()">Browse recipes →</button>
+          <button class="btn-ember" onclick="document.getElementById('recipe-section').scrollIntoView({behavior:'smooth'})">Browse recipes →</button>
           <button class="btn-ghost-white" onclick="showPage('flavors')">Explore flavors</button>
         </div>
         <div class="hero-stats">
@@ -871,42 +732,31 @@ footer{background:var(--ink);padding:40px;margin-top:40px}
     </div>
   </section>
 
-  <div id="recipes-gated-area">
-    <div class="search-strip">
-      <div class="search-strip-inner">
-        <div class="search-wrap">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input class="search-input" type="text" id="search-input" placeholder="Search recipes, cuisines…" oninput="renderGrid()">
-        </div>
-        <div class="filter-pills" id="filter-pills"></div>
-        <select class="sort-select" onchange="currentSort=this.value;renderGrid()">
-          <option value="default">Sort: Default</option>
-          <option value="rating">Top Rated</option>
-          <option value="price-asc">Price: Low→High</option>
-          <option value="price-desc">Price: High→Low</option>
-          <option value="name">Name A–Z</option>
-        </select>
+  <div class="search-strip">
+    <div class="search-strip-inner">
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" type="text" id="search-input" placeholder="Search recipes, cuisines…" oninput="renderGrid()">
       </div>
-    </div>
-
-    <div class="section" id="recipe-section">
-      <div class="section-head">
-        <div>
-          <div class="section-title">All Recipes</div>
-          <div class="section-sub" id="grid-count"></div>
-        </div>
-      </div>
-      <div class="recipe-grid" id="recipe-grid"></div>
+      <div class="filter-pills" id="filter-pills"></div>
+      <select class="sort-select" onchange="currentSort=this.value;renderGrid()">
+        <option value="default">Sort: Default</option>
+        <option value="rating">Top Rated</option>
+        <option value="price-asc">Price: Low→High</option>
+        <option value="price-desc">Price: High→Low</option>
+        <option value="name">Name A–Z</option>
+      </select>
     </div>
   </div>
 
-  <div class="section" id="recipes-signin-prompt" style="display:none">
-    <div style="max-width:480px;margin:40px auto;text-align:center;background:#fff;border-radius:var(--radius-lg);padding:48px 36px;box-shadow:var(--shadow-card)">
-      <div style="font-size:38px;margin-bottom:14px">🔒</div>
-      <div style="font-family:var(--font-display);font-size:22px;color:var(--ink);margin-bottom:8px">Sign in to browse recipes</div>
-      <p style="font-size:13.5px;color:var(--ink-3);line-height:1.6;margin-bottom:24px">Create a free account or sign in to explore our full recipe catalog, save favourites, and place orders.</p>
-      <button class="btn-ember" onclick="openLogin()">Sign in →</button>
+  <div class="section" id="recipe-section">
+    <div class="section-head">
+      <div>
+        <div class="section-title">All Recipes</div>
+        <div class="section-sub" id="grid-count"></div>
+      </div>
     </div>
+    <div class="recipe-grid" id="recipe-grid"></div>
   </div>
 
   <footer>
@@ -1056,120 +906,6 @@ footer{background:var(--ink);padding:40px;margin-top:40px}
   </div>
 </div>
 
-<!-- ══════════════ ADMIN DASHBOARD PAGE ══════════════ -->
-<div class="page admin-page" id="page-admin">
-  <aside class="admin-sidebar" id="admin-sidebar">
-    <div class="admin-sb-brand">
-      <div class="admin-sb-mark">🍳</div>
-      <div><div class="admin-sb-name">CookNest</div><div class="admin-sb-tag">Admin</div></div>
-    </div>
-    <div class="admin-sb-user" id="admin-sb-user"></div>
-    <nav class="admin-sb-nav">
-      <button class="admin-sb-link active" data-admin-page="dashboard" onclick="showAdminPage('dashboard')"><span class="admin-sb-icon">📊</span>Dashboard</button>
-      <button class="admin-sb-link" data-admin-page="recipes" onclick="showAdminPage('recipes')"><span class="admin-sb-icon">🍽️</span>Recipes</button>
-      <button class="admin-sb-link" data-admin-page="orders" onclick="showAdminPage('orders')"><span class="admin-sb-icon">📦</span>Orders</button>
-      <button class="admin-sb-link" data-admin-page="users" onclick="showAdminPage('users')"><span class="admin-sb-icon">👤</span>Users</button>
-      <button class="admin-sb-link" data-admin-page="comments" onclick="showAdminPage('comments')"><span class="admin-sb-icon">💬</span>Comments</button>
-      <button class="admin-sb-link" data-admin-page="fanfav" onclick="showAdminPage('fanfav')"><span class="admin-sb-icon">⭐</span>Fan Favorite</button>
-    </nav>
-    <div class="admin-sb-foot">
-      <a href="#" onclick="showPage('home');return false">↗ View storefront</a>
-      <button onclick="doLogout()">Log out</button>
-    </div>
-  </aside>
-
-  <main class="admin-main">
-    <div class="admin-mobile-bar"><button onclick="document.getElementById('admin-sidebar').classList.toggle('open')">☰</button><strong>CookNest Admin</strong></div>
-
-    <!-- DASHBOARD -->
-    <section class="admin-subpage active" id="adminpage-dashboard">
-      <div class="admin-page-head">
-        <div><div class="admin-page-title">Dashboard</div><div class="admin-page-sub">A snapshot of the CookNest store</div></div>
-      </div>
-      <div class="admin-stats-grid" id="admin-stats-grid"></div>
-      <div class="admin-section-card">
-        <div class="admin-section-card-head"><span class="admin-section-card-title">Recent orders</span><button class="admin-btn admin-btn-ghost admin-btn-sm" onclick="showAdminPage('orders')">View all →</button></div>
-        <div class="admin-table-wrap"><table id="admin-recent-orders-table"></table></div>
-      </div>
-    </section>
-
-    <!-- RECIPES -->
-    <section class="admin-subpage" id="adminpage-recipes">
-      <div class="admin-page-head">
-        <div><div class="admin-page-title">Recipes</div><div class="admin-page-sub" id="admin-recipes-count-sub"></div></div>
-        <button class="admin-btn admin-btn-primary" onclick="openAdminRecipeModal()">+ Add recipe</button>
-      </div>
-      <div class="admin-section-card"><div class="admin-table-wrap"><table id="admin-recipes-table"></table></div></div>
-    </section>
-
-    <!-- ORDERS -->
-    <section class="admin-subpage" id="adminpage-orders">
-      <div class="admin-page-head">
-        <div><div class="admin-page-title">Orders</div><div class="admin-page-sub" id="admin-orders-count-sub"></div></div>
-      </div>
-      <div class="admin-section-card"><div class="admin-table-wrap"><table id="admin-orders-table"></table></div></div>
-    </section>
-
-    <!-- USERS -->
-    <section class="admin-subpage" id="adminpage-users">
-      <div class="admin-page-head">
-        <div><div class="admin-page-title">Users</div><div class="admin-page-sub" id="admin-users-count-sub"></div></div>
-      </div>
-      <div class="admin-section-card"><div class="admin-table-wrap"><table id="admin-users-table"></table></div></div>
-    </section>
-
-    <!-- COMMENTS -->
-    <section class="admin-subpage" id="adminpage-comments">
-      <div class="admin-page-head">
-        <div><div class="admin-page-title">Comments</div><div class="admin-page-sub">Moderate recipe reviews and comments</div></div>
-      </div>
-      <div class="admin-section-card" id="admin-comments-wrap"></div>
-    </section>
-
-    <!-- FAN FAVORITE -->
-    <section class="admin-subpage" id="adminpage-fanfav">
-      <div class="admin-page-head">
-        <div><div class="admin-page-title">Fan Favorite</div><div class="admin-page-sub">Choose the recipe featured as this week's fan favorite</div></div>
-      </div>
-      <div class="admin-section-card">
-        <div class="admin-ff-card" id="admin-ff-preview"></div>
-        <div class="admin-ff-form">
-          <select id="admin-ff-select" class="admin-field" style="flex:1;padding:10px 12px;border:1.5px solid var(--paper-3);border-radius:8px;font-size:13.5px"></select>
-          <button class="admin-btn admin-btn-primary" onclick="saveAdminFanFav()">Save</button>
-        </div>
-      </div>
-    </section>
-  </main>
-</div>
-
-<!-- ADMIN RECIPE MODAL -->
-<div class="admin-modal-overlay" id="admin-recipe-modal-overlay" onclick="if(event.target===this)closeAdminRecipeModal()">
-  <div class="admin-modal">
-    <div class="admin-modal-head">
-      <div class="admin-modal-title" id="admin-recipe-modal-title">Add recipe</div>
-      <button class="admin-modal-close" onclick="closeAdminRecipeModal()">✕</button>
-    </div>
-    <input type="hidden" id="arf-id">
-    <div class="admin-field-row">
-      <div class="admin-field"><label>Emoji</label><input id="arf-emoji" maxlength="4" placeholder="🍝"></div>
-      <div class="admin-field"><label>Category</label><input id="arf-cat" placeholder="Filipino"></div>
-    </div>
-    <div class="admin-field"><label>Title</label><input id="arf-title" placeholder="Chicken Adobo"></div>
-    <div class="admin-field"><label>Description</label><textarea id="arf-desc" placeholder="Short, appetizing description"></textarea></div>
-    <div class="admin-field-row">
-      <div class="admin-field"><label>Price (₱)</label><input id="arf-price" type="number" min="0"></div>
-      <div class="admin-field"><label>Rating (0–5)</label><input id="arf-rating" type="number" min="0" max="5" step="0.1"></div>
-    </div>
-    <div class="admin-field"><label>Reviews count</label><input id="arf-reviews" type="number" min="0"></div>
-    <div class="admin-field"><label>Ingredients (one per line)</label><textarea id="arf-ing" placeholder="500g chicken pieces&#10;½ cup soy sauce"></textarea></div>
-    <div class="admin-field"><label>Steps (one per line)</label><textarea id="arf-steps" placeholder="Marinate the chicken...&#10;Sauté the garlic..."></textarea></div>
-    <div class="admin-modal-actions">
-      <button class="admin-btn admin-btn-ghost" onclick="closeAdminRecipeModal()">Cancel</button>
-      <button class="admin-btn admin-btn-primary" onclick="saveAdminRecipe()">Save recipe</button>
-    </div>
-  </div>
-</div>
-
 <!-- ══════════════ RECIPE MODAL ══════════════ -->
 <div class="overlay" id="recipe-overlay" onclick="maybeCloseModal(event)">
   <div class="modal-sheet" id="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -1291,10 +1027,8 @@ footer{background:var(--ink);padding:40px;margin-top:40px}
       <div class="form-group"><label>Email</label><input type="email" id="li-email" placeholder="juan@email.com"></div>
       <div class="form-group"><label>Password</label><input type="password" id="li-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <button class="btn-login-submit" onclick="doLogin()">Sign In →</button>
-      <div style="font-size:11px;color:var(--ink-3);text-align:center;margin-top:10px;font-family:'DM Mono',monospace;line-height:1.6">
-        Customer demo: customer@cooknest.com / customer123<br>
-        Admin demo: admin@cooknest.com / admin123
-      </div>
+      <div class="login-divider">or continue as guest</div>
+      <button class="btn-login-submit" style="background:var(--paper-2);color:var(--ink-2);border:1.5px solid var(--paper-3)" onclick="doGuestLogin()">👤 Browse as Guest</button>
     </div>
 
     <!-- Register form -->
@@ -1378,11 +1112,7 @@ if(Object.keys(comments).length===0){
 
 
 let fanFavId=load(K.FF,3); // default: Chicken Adobo
-const DEFAULT_USERS=[
-  {name:'Demo Customer',email:'customer@cooknest.com',password:'customer123'},
-  {name:'Admin',email:'admin@cooknest.com',password:'admin123',isAdmin:true}
-];
-let users=load(K.US,DEFAULT_USERS);   // [{name,email,password}]
+let users=load(K.US,[]);   // [{name,email,password}]
 let currentUser=load(K.CU,null);
 let currentFilter='All';
 let currentSort='default';
@@ -1399,31 +1129,10 @@ function renderAuthArea(){
       <div class="nav-user-pill">
         <div class="nav-user-avatar">${initials}</div>
         <span class="nav-user-name">${currentUser.name.split(' ')[0]}</span>
-        ${currentUser.isAdmin?'<button class="nav-admin-btn" onclick="showPage(\'admin\')">🔧 Admin Dashboard</button>':''}
         <button class="nav-logout" onclick="doLogout()">Sign out</button>
       </div>`;
   } else {
     el.innerHTML=`<button class="nav-auth" onclick="openLogin()">👤 Sign in</button>`;
-  }
-  renderRecipeGate();
-}
-function renderRecipeGate(){
-  const gated=document.getElementById('recipes-gated-area');
-  const prompt=document.getElementById('recipes-signin-prompt');
-  if(!gated||!prompt)return;
-  if(currentUser){
-    gated.style.display='';
-    prompt.style.display='none';
-  } else {
-    gated.style.display='none';
-    prompt.style.display='';
-  }
-}
-function goToRecipes(){
-  if(currentUser){
-    document.getElementById('recipe-section').scrollIntoView({behavior:'smooth'});
-  } else {
-    document.getElementById('recipes-signin-prompt').scrollIntoView({behavior:'smooth'});
   }
 }
 
@@ -1479,7 +1188,6 @@ function doRegister(){
 function doLogout(){
   currentUser=null;save(K.CU,null);
   renderAuthArea();
-  showPage('home');
   showToast('Signed out. See you next time!');
 }
 
@@ -1553,21 +1261,6 @@ function saveFanFav(){
 
 /* ── PAGES ─────────────────────────────────────── */
 function showPage(p){
-  if(p==='admin'){
-    if(!currentUser||!currentUser.isAdmin){showToast('Admin access only','error');return}
-    document.getElementById('storefront-nav').style.display='none';
-    document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
-    document.getElementById('page-admin').classList.add('active');
-    renderAdminAll();
-    window.scrollTo({top:0,behavior:'smooth'});
-    return;
-  }
-  if((p==='flavors'||p==='fanfav')&&!currentUser){
-    showToast('Sign in to browse recipes','error');
-    openLogin();
-    return;
-  }
-  document.getElementById('storefront-nav').style.display='';
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   document.querySelectorAll('.nav-link').forEach(el=>el.classList.remove('active'));
@@ -1853,273 +1546,6 @@ function showToast(msg,type=''){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className='toast show'+(type?' '+type:'');
   clearTimeout(_tt);_tt=setTimeout(()=>t.className='toast',2800);
-}
-
-/* ══════════════════════════════════════════════════
-   ADMIN DASHBOARD
-   Reuses shared state: recipes, orders, comments, users,
-   fanFavId, K, load(), save(), DEFAULTS, showToast(), showPage()
-   ══════════════════════════════════════════════════ */
-const ADMIN_STATUSES=['Confirmed','Preparing','Out for Delivery','Delivered','Cancelled'];
-
-function showAdminPage(p){
-  document.querySelectorAll('.admin-subpage').forEach(el=>el.classList.remove('active'));
-  document.getElementById('adminpage-'+p).classList.add('active');
-  document.querySelectorAll('.admin-sb-link').forEach(el=>el.classList.toggle('active',el.dataset.adminPage===p));
-  document.getElementById('admin-sidebar').classList.remove('open');
-  if(p==='dashboard')renderAdminDashboard();
-  if(p==='recipes')renderAdminRecipes();
-  if(p==='orders')renderAdminOrdersTable();
-  if(p==='users')renderAdminUsers();
-  if(p==='comments')renderAdminComments();
-  if(p==='fanfav')renderAdminFanFav();
-}
-
-function renderAdminAll(){
-  recipes=load(K.R,DEFAULTS);orders=load(K.O,[]);comments=load(K.CM,{});users=load(K.US,DEFAULT_USERS);fanFavId=load(K.FF,3);
-  renderAdminSbUser();
-  document.querySelectorAll('.admin-subpage').forEach(el=>el.classList.remove('active'));
-  document.getElementById('adminpage-dashboard').classList.add('active');
-  document.querySelectorAll('.admin-sb-link').forEach(el=>el.classList.toggle('active',el.dataset.adminPage==='dashboard'));
-  renderAdminDashboard();renderAdminRecipes();renderAdminOrdersTable();renderAdminUsers();renderAdminComments();renderAdminFanFav();
-}
-function renderAdminSbUser(){
-  const el=document.getElementById('admin-sb-user');
-  if(!currentUser||!el)return;
-  const initials=currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  el.innerHTML=`
-    <div class="admin-sb-user-avatar">${initials}</div>
-    <span class="admin-sb-user-name">${currentUser.name.split(' ')[0]}</span>
-    <span class="admin-sb-user-badge">Admin</span>`;
-}
-
-/* ── DASHBOARD ────────────────────────────────── */
-function renderAdminDashboard(){
-  const revenue=orders.reduce((a,o)=>a+(o.total||0),0);
-  const totalComments=Object.values(comments).reduce((a,c)=>a+c.length,0);
-  const stats=[
-    {icon:'🍽️',bg:'var(--ember-pale)',num:recipes.length,label:'Recipes'},
-    {icon:'📦',bg:'var(--gold-pale)',num:orders.length,label:'Orders placed'},
-    {icon:'💰',bg:'var(--leaf-pale)',num:'₱'+revenue.toLocaleString(),label:'Total revenue'},
-    {icon:'👤',bg:'var(--ember-pale)',num:users.length,label:'Registered users'},
-    {icon:'💬',bg:'var(--gold-pale)',num:totalComments,label:'Comments'}
-  ];
-  document.getElementById('admin-stats-grid').innerHTML=stats.map(s=>`
-    <div class="admin-stat-card">
-      <div class="admin-stat-icon" style="background:${s.bg}">${s.icon}</div>
-      <div class="admin-stat-num">${s.num}</div>
-      <div class="admin-stat-label">${s.label}</div>
-    </div>`).join('');
-
-  const recent=orders.slice(0,5);
-  const table=document.getElementById('admin-recent-orders-table');
-  if(!table)return;
-  if(!recent.length){
-    table.outerHTML='<div class="admin-empty-state"><div class="admin-empty-state-icon">📦</div><div class="admin-empty-state-title">No orders yet</div><div class="admin-empty-state-sub">Orders placed on the storefront will appear here.</div></div>';
-    return;
-  }
-  table.innerHTML=`
-    <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
-    <tbody>${recent.map(o=>`
-      <tr>
-        <td class="admin-cell-muted">${o.id}</td>
-        <td>${o.name}</td>
-        <td><div class="admin-order-chips">${o.items.map(i=>`<span class="admin-order-chip">${i.emoji} ×${i.qty}</span>`).join('')}</div></td>
-        <td>₱${o.total}</td>
-        <td><span class="admin-tag">${o.status}</span></td>
-        <td class="admin-cell-muted">${o.date}</td>
-      </tr>`).join('')}</tbody>`;
-}
-
-/* ── RECIPES ──────────────────────────────────── */
-function renderAdminRecipes(){
-  document.getElementById('admin-recipes-count-sub').textContent=recipes.length+' recipe'+(recipes.length===1?'':'s')+' in the catalog';
-  const table=document.getElementById('admin-recipes-table');
-  if(!recipes.length){
-    table.parentElement.innerHTML='<div class="admin-empty-state"><div class="admin-empty-state-icon">🍽️</div><div class="admin-empty-state-title">No recipes yet</div><div class="admin-empty-state-sub">Add your first recipe to get started.</div></div>';
-    return;
-  }
-  table.innerHTML=`
-    <thead><tr><th>Recipe</th><th>Category</th><th>Price</th><th>Rating</th><th>Reviews</th><th></th></tr></thead>
-    <tbody>${recipes.map(r=>`
-      <tr>
-        <td class="admin-cell-title"><span class="admin-cell-emoji">${r.emoji}</span>${r.title}</td>
-        <td><span class="admin-tag">${r.cat}</span></td>
-        <td>₱${r.price}</td>
-        <td>★ ${r.rating}</td>
-        <td class="admin-cell-muted">${r.reviews}</td>
-        <td class="admin-actions-cell">
-          <button class="admin-icon-btn" title="Edit" onclick="openAdminRecipeModal(${r.id})">✎</button>
-          <button class="admin-icon-btn" title="Delete" onclick="deleteAdminRecipe(${r.id})">🗑</button>
-        </td>
-      </tr>`).join('')}</tbody>`;
-}
-
-function openAdminRecipeModal(id){
-  const editing=id!=null;
-  document.getElementById('admin-recipe-modal-title').textContent=editing?'Edit recipe':'Add recipe';
-  const r=editing?recipes.find(x=>x.id===id):null;
-  document.getElementById('arf-id').value=editing?id:'';
-  document.getElementById('arf-emoji').value=r?r.emoji:'';
-  document.getElementById('arf-cat').value=r?r.cat:'';
-  document.getElementById('arf-title').value=r?r.title:'';
-  document.getElementById('arf-desc').value=r?r.desc:'';
-  document.getElementById('arf-price').value=r?r.price:'';
-  document.getElementById('arf-rating').value=r?r.rating:'5';
-  document.getElementById('arf-reviews').value=r?r.reviews:'0';
-  document.getElementById('arf-ing').value=r?r.ing.join('\n'):'';
-  document.getElementById('arf-steps').value=r?r.steps.join('\n'):'';
-  document.getElementById('admin-recipe-modal-overlay').classList.add('open');
-}
-function closeAdminRecipeModal(){document.getElementById('admin-recipe-modal-overlay').classList.remove('open')}
-
-function saveAdminRecipe(){
-  const idVal=document.getElementById('arf-id').value;
-  const title=document.getElementById('arf-title').value.trim();
-  const cat=document.getElementById('arf-cat').value.trim();
-  const emoji=document.getElementById('arf-emoji').value.trim()||'🍽️';
-  const desc=document.getElementById('arf-desc').value.trim();
-  const price=parseFloat(document.getElementById('arf-price').value)||0;
-  const rating=parseFloat(document.getElementById('arf-rating').value)||5;
-  const reviews=parseInt(document.getElementById('arf-reviews').value)||0;
-  const ing=document.getElementById('arf-ing').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  const steps=document.getElementById('arf-steps').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  if(!title||!cat||!ing.length||!steps.length){showToast('Please fill in title, category, ingredients and steps','error');return}
-
-  if(idVal){
-    const r=recipes.find(x=>x.id===parseInt(idVal));
-    Object.assign(r,{title,cat,emoji,desc,price,rating,reviews,ing,steps});
-    showToast('Recipe updated','success');
-  }else{
-    const newId=recipes.length?Math.max(...recipes.map(r=>r.id))+1:1;
-    recipes.push({id:newId,title,cat,emoji,desc,price,rating,reviews,ing,steps,added:new Date().toISOString().slice(0,10)});
-    showToast('Recipe added','success');
-  }
-  save(K.R,recipes);
-  closeAdminRecipeModal();
-  renderAdminRecipes();renderAdminDashboard();
-}
-
-function deleteAdminRecipe(id){
-  const r=recipes.find(x=>x.id===id);
-  if(!confirm(`Delete "${r.title}"? This can't be undone.`))return;
-  recipes=recipes.filter(x=>x.id!==id);
-  save(K.R,recipes);
-  if(fanFavId===id){fanFavId=recipes[0]?recipes[0].id:null;save(K.FF,fanFavId);}
-  renderAdminRecipes();renderAdminDashboard();
-  showToast('Recipe deleted','success');
-}
-
-/* ── ORDERS ───────────────────────────────────── */
-function renderAdminOrdersTable(){
-  document.getElementById('admin-orders-count-sub').textContent=orders.length+' order'+(orders.length===1?'':'s')+' placed';
-  const table=document.getElementById('admin-orders-table');
-  if(!orders.length){
-    table.parentElement.innerHTML='<div class="admin-empty-state"><div class="admin-empty-state-icon">📦</div><div class="admin-empty-state-title">No orders yet</div><div class="admin-empty-state-sub">Orders placed on the storefront will appear here.</div></div>';
-    return;
-  }
-  table.innerHTML=`
-    <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th></tr></thead>
-    <tbody>${orders.map(o=>`
-      <tr>
-        <td class="admin-cell-muted">${o.id}</td>
-        <td>${o.name}<div class="admin-cell-muted">${o.email}</div></td>
-        <td><div class="admin-order-chips">${o.items.map(i=>`<span class="admin-order-chip">${i.emoji} ${i.title} ×${i.qty}</span>`).join('')}</div></td>
-        <td>₱${o.total}</td>
-        <td class="admin-cell-muted">${o.payment}</td>
-        <td>
-          <select class="admin-status-select" data-status="${o.status}" onchange="updateAdminOrderStatus('${o.id}',this.value)">
-            ${ADMIN_STATUSES.map(s=>`<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('')}
-          </select>
-        </td>
-        <td class="admin-cell-muted">${o.date}</td>
-      </tr>`).join('')}</tbody>`;
-}
-function updateAdminOrderStatus(id,status){
-  const o=orders.find(x=>x.id===id);
-  if(!o)return;
-  o.status=status;
-  save(K.O,orders);
-  renderAdminOrdersTable();renderAdminDashboard();
-  showToast('Order '+id+' marked as '+status,'success');
-}
-
-/* ── USERS ────────────────────────────────────── */
-function renderAdminUsers(){
-  document.getElementById('admin-users-count-sub').textContent=users.length+' registered user'+(users.length===1?'':'s');
-  const table=document.getElementById('admin-users-table');
-  if(!users.length){
-    table.parentElement.innerHTML='<div class="admin-empty-state"><div class="admin-empty-state-icon">👤</div><div class="admin-empty-state-title">No registered users yet</div><div class="admin-empty-state-sub">Accounts created on the storefront will appear here.</div></div>';
-    return;
-  }
-  table.innerHTML=`
-    <thead><tr><th>Name</th><th>Email</th><th>Orders placed</th><th></th></tr></thead>
-    <tbody>${users.map((u,idx)=>{
-      const count=orders.filter(o=>o.email===u.email).length;
-      return `<tr>
-        <td class="admin-cell-title">${u.name}${u.isAdmin?' <span class="admin-tag">Admin</span>':''}</td>
-        <td class="admin-cell-muted">${u.email}</td>
-        <td>${count}</td>
-        <td class="admin-actions-cell">${u.isAdmin?'':`<button class="admin-icon-btn" title="Remove" onclick="deleteAdminUser(${idx})">🗑</button>`}</td>
-      </tr>`;
-    }).join('')}</tbody>`;
-}
-function deleteAdminUser(idx){
-  const u=users[idx];
-  if(u.isAdmin){showToast("Can't remove an admin account",'error');return}
-  if(!confirm(`Remove account for ${u.name}?`))return;
-  users.splice(idx,1);
-  save(K.US,users);
-  renderAdminUsers();renderAdminDashboard();
-  showToast('User removed','success');
-}
-
-/* ── COMMENTS ─────────────────────────────────── */
-function renderAdminComments(){
-  const wrap=document.getElementById('admin-comments-wrap');
-  const ids=Object.keys(comments).filter(id=>comments[id]&&comments[id].length);
-  if(!ids.length){
-    wrap.innerHTML='<div class="admin-empty-state"><div class="admin-empty-state-icon">💬</div><div class="admin-empty-state-title">No comments yet</div><div class="admin-empty-state-sub">Reviews left on recipes will appear here.</div></div>';
-    return;
-  }
-  wrap.innerHTML=ids.map(id=>{
-    const r=recipes.find(x=>x.id===parseInt(id));
-    const title=r?`${r.emoji} ${r.title}`:'Recipe #'+id;
-    return `<div class="admin-comment-group">
-      <div class="admin-comment-group-head">${title} <span class="admin-cell-muted">(${comments[id].length})</span></div>
-      ${comments[id].map((c,i)=>`
-        <div class="admin-comment-row">
-          <div><div class="admin-comment-author">${c.name}</div><div class="admin-comment-text">${c.text}</div></div>
-          <button class="admin-icon-btn" title="Delete" onclick="deleteAdminComment('${id}',${i})">🗑</button>
-        </div>`).join('')}
-    </div>`;
-  }).join('');
-}
-function deleteAdminComment(id,idx){
-  if(!confirm('Delete this comment?'))return;
-  comments[id].splice(idx,1);
-  save(K.CM,comments);
-  renderAdminComments();renderAdminDashboard();
-  showToast('Comment deleted','success');
-}
-
-/* ── FAN FAVORITE ─────────────────────────────── */
-function renderAdminFanFav(){
-  const sel=document.getElementById('admin-ff-select');
-  sel.innerHTML=recipes.map(r=>`<option value="${r.id}" ${r.id===fanFavId?'selected':''}>${r.emoji} ${r.title}</option>`).join('');
-  const r=recipes.find(x=>x.id===fanFavId)||recipes[0];
-  document.getElementById('admin-ff-preview').innerHTML=r?`
-    <div class="admin-ff-emoji">${r.emoji}</div>
-    <div><div class="admin-ff-title">${r.title}</div><div class="admin-ff-desc">${r.desc}</div></div>
-  `:'<div class="admin-empty-state">No recipes available to feature.</div>';
-}
-function saveAdminFanFav(){
-  fanFavId=parseInt(document.getElementById('admin-ff-select').value);
-  save(K.FF,fanFavId);
-  renderAdminFanFav();
-  renderHeroFanFav();
-  renderFanFavDropdown();
-  showToast('Fan favorite updated','success');
 }
 
 /* ── INIT ───────────────────────────────────────── */
