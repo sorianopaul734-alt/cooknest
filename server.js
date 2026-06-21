@@ -136,3 +136,10 @@ app.get('/comments/:recipe_id', (req, res) => {
 app.listen(process.env.PORT || 5000, () => {
   console.log(`Server running on port ${process.env.PORT || 5000}`);
 });
+
+// Example backend seeding
+const defaultAdmin = {
+  email: 'admin@cooknest.com',
+  password: 'admin123', // Note: In production, this should be hashed!
+  isAdmin: true
+};
