@@ -10,8 +10,8 @@
  * IMPORTANT: delete or stop using this script's printed password reminder
  * once you've logged in. Don't commit real passwords to git.
  */
-
 require('dotenv').config();
+
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
