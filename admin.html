@@ -287,20 +287,30 @@ tr:hover td{background:var(--paper-2)}
     </section>
 
     <!-- USERS -->
-    <section class="page" id="page-users">
-      <div class="page-head">
-        <div><div class="page-title">Users</div><div class="page-sub" id="users-count-sub"></div></div>
-      </div>
-      <div class="section-card"><div class="table-wrap"><table id="users-table"></table></div></div>
-    </section>
+   <section class="page" id="page-users">
+  <div class="page-head">
+    <div>
+      <div class="page-title">Users</div>
+      <div class="page-sub" id="users-count-sub"></div>
+    </div>
+  </div>
+  <div class="section-card">
+    <div class="table-wrap">
+      <table id="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody id="users-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
-    <!-- COMMENTS -->
-    <section class="page" id="page-comments">
-      <div class="page-head">
-        <div><div class="page-title">Comments</div><div class="page-sub">Moderate recipe reviews and comments</div></div>
-      </div>
-      <div class="section-card" id="comments-wrap"></div>
-    </section>
 
     <!-- FAN FAVORITE -->
     <section class="page" id="page-fanfav">
@@ -742,6 +752,43 @@ async function saveFanFav(){
     showToast(err.message||'Could not update fan favourite','error');
   }
 }
+
+<script>
+async function loadUsers() {
+  const res = await fetch('/api/users');
+  const users = await res.json();
+
+  const tbody = document.getElementById('users-body');
+  tbody.innerHTML = users.map(u => `
+    <tr>
+      <td>${u.id}</td>
+      <td>${u.name}</td>
+      <td>${u.email}</td>
+      <td>
+        <select onchange="updateRole(${u.id}, this.value)">
+          <option value="user" ${u.role === 'user' ? 'selected' : ''}>User</option>
+          <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+        </select>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function updateRole(userId, newRole) {
+  const res = await fetch(`/api/users/${userId}/role`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ role: newRole })
+  });
+  const data = await res.json();
+  alert(data.message);
+  loadUsers(); // refresh table
+}
+
+// load users when page opens
+loadUsers();
+</script>
+
 
 /* ── INIT ───────────────────────────────────────── */
 // If a valid admin session is already stored, skip the gate and load data.
