@@ -1,174 +1,192 @@
+// =====================================================
+// REFERENCE FILE — not loaded by index.html or admin.html
+// =====================================================
+// Both HTML files are self-contained (all JS inline in <script> tags,
+// matching their original structure) so they don't include this file
+// via <script src>. This file mirrors the same API functions for your
+// own reference, reuse in other tools, or future refactors.
+// =====================================================
+
 // ===================== CONFIG =====================
 const API_URL = "https://cooknest-production.up.railway.app";
-const K = { W:'cn_wish', FF:'cn_fanfav', CU:'cn_currentuser' };
+const K = { CU: 'cn_currentuser', TOKEN: 'cn_token' };
 
-function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
-function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+function load(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d } catch { return d } }
+function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} }
+function clear(k) { try { localStorage.removeItem(k) } catch {} }
 
-let wishlist = load(K.W, []);
-let fanFavId = load(K.FF, 3);
 let currentUser = load(K.CU, null);
+let authToken = load(K.TOKEN, null);
 
-let recipes = [];
-let cart = [];
-let orders = [];
-let comments = {};
+// ===================== AUTH HELPERS =====================
+function authHeaders() {
+  return authToken ? { "Authorization": "Bearer " + authToken } : {};
+}
+
+function setSession(user, token) {
+  currentUser = user;
+  authToken = token;
+  save(K.CU, user);
+  save(K.TOKEN, token);
+}
+
+function clearSession() {
+  currentUser = null;
+  authToken = null;
+  clear(K.CU);
+  clear(K.TOKEN);
+}
+
+function isAdmin() {
+  return currentUser && currentUser.role === 'admin';
+}
 
 // ===================== BACKEND CALLS =====================
 async function fetchRecipes() {
   const res = await fetch(`${API_URL}/recipes`);
-  return await res.json();
+  if (!res.ok) throw new Error('Failed to load recipes');
+  const data = await res.json();
+  // MySQL DECIMAL columns come back as strings — normalize to numbers
+  return data.map(r => ({ ...r, price: Number(r.price), rating: Number(r.rating), reviews: Number(r.reviews) }));
 }
 
 async function registerUser(fname, lname, email, password) {
-  const name = `${fname} ${lname}`;
+  const name = `${fname} ${lname}`.trim();
   const res = await fetch(`${API_URL}/users/register`, {
-    method:"POST", headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ name, email, password })
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password })
   });
-  return await res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Registration failed');
+  setSession(data.user, data.token);
+  return data;
 }
 
 async function loginUser(email, password) {
   const res = await fetch(`${API_URL}/users/login`, {
-    method:"POST", headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ email, password })
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
   });
-  return await res.json();
+  const data = await res.json();
+  if (!res.ok || data.success === false) throw new Error(data.message || data.error || 'Login failed');
+  setSession(data.user, data.token);
+  return data;
 }
 
-async function placeOrder(order) {
+function logoutUser() {
+  clearSession();
+}
+
+async function placeOrderApi(items, total, payment_method) {
   const res = await fetch(`${API_URL}/orders`, {
-    method:"POST", headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify(order)
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ items, total, payment_method })
   });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to place order');
+  return data;
+}
+
+async function getMyOrders(user_id) {
+  const res = await fetch(`${API_URL}/orders/${user_id}`, { headers: authHeaders() });
+  if (!res.ok) throw new Error('Failed to load orders');
   return await res.json();
 }
 
-async function getOrders(user_id) {
-  const res = await fetch(`${API_URL}/orders/${user_id}`);
-  return await res.json();
-}
-
-async function addToCart(user_id, recipe_id, qty) {
-  const res = await fetch(`${API_URL}/cart`, {
-    method:"POST", headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ user_id, recipe_id, qty })
-  });
-  return await res.json();
-}
-
-async function getCart(user_id) {
-  const res = await fetch(`${API_URL}/cart/${user_id}`);
-  return await res.json();
-}
-
-async function postComment(recipe_id, user_id, text, rating) {
+async function postComment(recipe_id, text, rating) {
   const res = await fetch(`${API_URL}/comments`, {
-    method:"POST", headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ recipe_id, user_id, text, rating })
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ recipe_id, text, rating })
   });
-  return await res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to post comment');
+  return data;
 }
 
 async function getComments(recipe_id) {
   const res = await fetch(`${API_URL}/comments/${recipe_id}`);
+  if (!res.ok) throw new Error('Failed to load comments');
   return await res.json();
 }
 
-// ===================== UI LOGIC =====================
-let currentFilter = 'All';
-let currentSort = 'default';
-let activeRecipe = null;
-
-function renderFilters() {
-  const cats = ['All', ...new Set(recipes.map(r => r.cat))];
-  document.getElementById('filter-pills').innerHTML = cats.map(c =>
-    `<button class="filter-pill${c===currentFilter?' active':''}" onclick="setFilter('${c}')">${c}</button>`
-  ).join('');
+async function getFanFavId() {
+  const res = await fetch(`${API_URL}/settings/fan-fav`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.fan_fav_id;
 }
 
-function setFilter(f){currentFilter=f;renderFilters();renderGrid()}
-
-function getFiltered() {
-  const q=document.getElementById('search-input').value.toLowerCase().trim();
-  let r=[...recipes];
-  if(currentFilter!=='All')r=r.filter(x=>x.cat===currentFilter);
-  if(q)r=r.filter(x=>x.title.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q)||x.description.toLowerCase().includes(q));
-  if(currentSort==='rating')r.sort((a,b)=>b.rating-a.rating);
-  else if(currentSort==='name')r.sort((a,b)=>a.title.localeCompare(b.title));
-  else if(currentSort==='price-asc')r.sort((a,b)=>a.price-b.price);
-  else if(currentSort==='price-desc')r.sort((a,b)=>b.price-a.price);
-  return r;
+// ===================== ADMIN-ONLY CALLS =====================
+async function adminGetAllUsers() {
+  const res = await fetch(`${API_URL}/users`, { headers: authHeaders() });
+  if (!res.ok) throw new Error('Failed to load users');
+  return await res.json();
 }
 
-function renderGrid() {
-  const r=getFiltered();
-  document.getElementById('grid-count').textContent=r.length+' recipe'+(r.length!==1?'s':'');
-  if(!r.length){
-    document.getElementById('recipe-grid').innerHTML='<div>No recipes found</div>';
-    return;
-  }
-  document.getElementById('recipe-grid').innerHTML=r.map(rec=>`
-    <div class="recipe-card" onclick="openRecipe(${rec.id})">
-      <div class="recipe-card-thumb">${rec.emoji||'🍴'}
-        <button class="recipe-card-wish${wishlist.includes(rec.id)?' wishlisted':''}" onclick="event.stopPropagation();toggleWishId(${rec.id})">${wishlist.includes(rec.id)?'♥':'♡'}</button>
-      </div>
-      <div class="recipe-card-body">
-        <div class="recipe-card-cat">${rec.cat}</div>
-        <div class="recipe-card-title">${rec.title}</div>
-        <div class="recipe-card-desc">${rec.description}</div>
-        <div class="recipe-card-foot">
-          <div class="stars-row">★${rec.rating} (${rec.reviews})</div>
-          <div class="recipe-card-price-wrap">
-            <span class="recipe-card-price">₱${rec.price}</span>
-            <button class="btn-add-card" onclick="event.stopPropagation();addToCart(currentUser.id, ${rec.id}, 1)">+ Cart</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `).join('');
+async function adminGetAllOrders() {
+  const res = await fetch(`${API_URL}/orders/all`, { headers: authHeaders() });
+  if (!res.ok) throw new Error('Failed to load orders');
+  return await res.json();
 }
 
-// ===================== MODAL =====================
-async function openRecipe(id){
-  const r=recipes.find(x=>x.id===id);
-  if(!r)return;
-  activeRecipe=r;
-  document.getElementById('modal-title').textContent=r.title;
-  document.getElementById('m-cat').textContent=r.cat;
-  document.getElementById('m-price').textContent='₱'+r.price;
-  document.getElementById('m-thumb').innerHTML=`<div>${r.emoji||'🍴'} ★${r.rating}</div>`;
-  document.getElementById('m-ing').innerHTML=r.ing.map(i=>`<div>${i}</div>`).join('');
-  document.getElementById('m-steps').innerHTML=r.steps.map((s,i)=>`<div>${i+1}. ${s}</div>`).join('');
-  const wb=document.getElementById('btn-wish-big');
-  const w=wishlist.includes(id);
-  wb.textContent=w?'♥':'♡';
-  wb.classList.toggle('wishlisted',w);
-  const comm=await getComments(id);
-  renderModalComments(comm);
-  document.getElementById('recipe-overlay').classList.add('open');
+async function adminUpdateOrderStatus(id, status) {
+  const res = await fetch(`${API_URL}/orders/${id}/status`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ status })
+  });
+  if (!res.ok) throw new Error('Failed to update order status');
+  return await res.json();
 }
 
-function renderModalComments(list){
-  const el=document.getElementById('m-comments');
-  el.innerHTML=list.length
-    ?list.map(c=>`<div><b>${c.user_id||c.name}</b>: ${c.text}</div>`).join('')
-    :'<div>No reviews yet</div>';
+async function adminGetAllComments() {
+  const res = await fetch(`${API_URL}/comments`, { headers: authHeaders() });
+  if (!res.ok) throw new Error('Failed to load comments');
+  return await res.json();
 }
 
-// ===================== WISHLIST =====================
-function toggleWishId(id){
-  const i=wishlist.indexOf(id);
-  i===-1?wishlist.push(id):wishlist.splice(i,1);
-  save(K.W,wishlist);
-  renderGrid();
+async function adminDeleteComment(id) {
+  const res = await fetch(`${API_URL}/comments/${id}`, { method: "DELETE", headers: authHeaders() });
+  if (!res.ok) throw new Error('Failed to delete comment');
+  return await res.json();
 }
 
-// ===================== INIT =====================
-document.addEventListener("DOMContentLoaded", async () => {
-  recipes = await fetchRecipes();
-  renderFilters();
-  renderGrid();
-  renderHeroFanFav();
-});
+async function adminCreateRecipe(recipe) {
+  const res = await fetch(`${API_URL}/recipes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(recipe)
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to create recipe');
+  return data;
+}
+
+async function adminUpdateRecipe(id, recipe) {
+  const res = await fetch(`${API_URL}/recipes/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(recipe)
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to update recipe');
+  return data;
+}
+
+async function adminDeleteRecipe(id) {
+  const res = await fetch(`${API_URL}/recipes/${id}`, { method: "DELETE", headers: authHeaders() });
+  if (!res.ok) throw new Error('Failed to delete recipe');
+  return await res.json();
+}
+
+async function adminSetFanFav(recipe_id) {
+  const res = await fetch(`${API_URL}/settings/fan-fav`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ recipe_id })
+  });
+  if (!res.ok) throw new Error('Failed to update fan favourite');
+  return await res.json();
+}

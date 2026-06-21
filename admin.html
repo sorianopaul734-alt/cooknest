@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CookNest — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A1208;
+  --ink-2:#4A3F32;
+  --ink-3:#8A7D6E;
+  --paper:#FAF7F2;
+  --paper-2:#F2EDE5;
+  --paper-3:#E8E0D4;
+  --ember:#D44A0A;
+  --ember-light:#F05A18;
+  --ember-pale:#FDF0E8;
+  --gold:#C8922A;
+  --gold-pale:#FDF6E3;
+  --leaf:#2E6B40;
+  --leaf-pale:#EAF3EE;
+  --red:#B3261E;
+  --red-pale:#FBEAE9;
+  --radius-sm:6px;
+  --radius-md:12px;
+  --radius-lg:20px;
+  --shadow-card:0 2px 12px rgba(26,18,8,0.07);
+  --shadow-float:0 8px 32px rgba(26,18,8,0.18);
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --t-fast:0.15s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);font-size:15px;line-height:1.55}
+button{font-family:var(--font-body);cursor:pointer}
+input,textarea,select{font-family:var(--font-body)}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--ember);color:#fff}
+
+/* ── GATE ─────────────────────────────────────── */
+.gate{
+  position:fixed;inset:0;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;z-index:1000;
+}
+.gate-card{
+  width:340px;background:var(--paper);border-radius:var(--radius-lg);
+  padding:40px 36px;box-shadow:var(--shadow-float);text-align:center;
+}
+.gate-mark{
+  width:48px;height:48px;background:var(--ember);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 18px;
+}
+.gate-title{font-family:var(--font-display);font-size:24px;margin-bottom:4px}
+.gate-sub{font-size:13px;color:var(--ink-3);margin-bottom:24px}
+.gate-input{
+  width:100%;padding:12px 14px;border:1.5px solid var(--paper-3);border-radius:var(--radius-sm);
+  font-size:14px;background:#fff;margin-bottom:10px;outline:none;transition:border-color var(--t-fast);
+  letter-spacing:2px;text-align:center;
+}
+.gate-input:focus{border-color:var(--ember)}
+.gate-btn{
+  width:100%;padding:12px;border:none;border-radius:var(--radius-sm);background:var(--ink);
+  color:#fff;font-size:14px;font-weight:500;transition:background var(--t-fast);
+}
+.gate-btn:hover{background:var(--ember)}
+.gate-err{font-size:12px;color:var(--red);margin-top:10px;min-height:14px}
+.gate-hint{font-size:11px;color:var(--ink-3);margin-top:18px;font-family:var(--font-mono)}
+
+/* ── LAYOUT ───────────────────────────────────── */
+.app{display:none;min-height:100vh}
+.app.show{display:flex}
+.sidebar{
+  width:230px;flex-shrink:0;background:var(--ink);color:#fff;
+  display:flex;flex-direction:column;padding:24px 16px;position:sticky;top:0;height:100vh;
+}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 26px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:18px}
+.sb-mark{width:32px;height:32px;background:var(--ember);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.sb-name{font-family:var(--font-display);font-size:18px}
+.sb-tag{font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+.sb-nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.sb-link{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);
+  color:rgba(255,255,255,0.6);font-size:13.5px;border:none;background:transparent;width:100%;text-align:left;
+  transition:all var(--t-fast);
+}
+.sb-link:hover{color:#fff;background:rgba(255,255,255,0.07)}
+.sb-link.active{color:#fff;background:var(--ember)}
+.sb-icon{font-size:15px;width:18px;text-align:center}
+.sb-foot{padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;gap:6px}
+.sb-foot a, .sb-foot button{
+  font-size:12.5px;color:rgba(255,255,255,0.5);padding:8px 12px;border-radius:var(--radius-sm);
+  background:transparent;border:none;text-align:left;transition:all var(--t-fast);
+}
+.sb-foot a:hover, .sb-foot button:hover{color:#fff;background:rgba(255,255,255,0.07)}
+
+.main{flex:1;padding:32px 40px 60px;max-width:1180px}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;gap:16px;flex-wrap:wrap}
+.page-title{font-family:var(--font-display);font-size:30px}
+.page-sub{font-size:13px;color:var(--ink-3);margin-top:4px}
+
+/* ── BUTTONS ──────────────────────────────────── */
+.btn{padding:10px 18px;border-radius:var(--radius-sm);border:none;font-size:13.5px;font-weight:500;transition:all var(--t-fast)}
+.btn-primary{background:var(--ember);color:#fff}
+.btn-primary:hover{background:var(--ember-light)}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--paper-3)}
+.btn-ghost:hover{border-color:var(--ink-3)}
+.btn-danger{background:var(--red-pale);color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:6px}
+.icon-btn{width:30px;height:30px;border-radius:7px;border:1.5px solid var(--paper-3);background:#fff;font-size:13px;display:inline-flex;align-items:center;justify-content:center;transition:all var(--t-fast)}
+.icon-btn:hover{border-color:var(--ink-3)}
+
+/* ── STAT CARDS ───────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:30px}
+.stat-card{background:#fff;border-radius:var(--radius-md);padding:20px 22px;box-shadow:var(--shadow-card)}
+.stat-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px}
+.stat-num{font-family:var(--font-display);font-size:28px;line-height:1}
+.stat-label{font-size:12px;color:var(--ink-3);margin-top:6px}
+
+.section-card{background:#fff;border-radius:var(--radius-md);box-shadow:var(--shadow-card);overflow:hidden;margin-bottom:24px}
+.section-card-head{padding:18px 22px;border-bottom:1px solid var(--paper-2);display:flex;align-items:center;justify-content:space-between}
+.section-card-title{font-size:14.5px;font-weight:500}
+
+/* ── TABLE ────────────────────────────────────── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-3);padding:12px 22px;background:var(--paper-2);font-weight:500;white-space:nowrap}
+td{padding:14px 22px;font-size:13.5px;border-top:1px solid var(--paper-2);vertical-align:middle}
+tr:hover td{background:var(--paper-2)}
+.cell-title{font-weight:500;display:flex;align-items:center;gap:8px}
+.cell-emoji{font-size:18px}
+.cell-muted{color:var(--ink-3);font-size:12.5px}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;background:var(--paper-3);color:var(--ink-2)}
+.actions-cell{display:flex;gap:6px}
+
+/* status pill + select */
+.status-select{
+  font-size:12px;font-weight:500;padding:5px 10px;border-radius:20px;border:1.5px solid transparent;
+  background:var(--leaf-pale);color:var(--leaf);appearance:none;cursor:pointer;
+}
+.status-select[data-status="Cancelled"]{background:var(--red-pale);color:var(--red)}
+.status-select[data-status="Preparing"]{background:var(--gold-pale);color:var(--gold)}
+.status-select[data-status="Out for Delivery"]{background:var(--ember-pale);color:var(--ember)}
+
+.empty-state{padding:60px 20px;text-align:center;color:var(--ink-3)}
+.empty-state-icon{font-size:34px;margin-bottom:10px}
+.empty-state-title{font-size:14px;color:var(--ink-2);font-weight:500;margin-bottom:4px}
+.empty-state-sub{font-size:12.5px}
+
+/* order item chips inside expanded row */
+.order-chips{display:flex;flex-wrap:wrap;gap:6px}
+.order-chip{font-size:11px;background:var(--paper-2);padding:3px 9px;border-radius:20px;color:var(--ink-2)}
+
+/* ── COMMENTS ─────────────────────────────────── */
+.comment-group{margin-bottom:18px}
+.comment-group-head{font-size:13px;font-weight:500;padding:14px 22px;background:var(--paper-2);display:flex;align-items:center;gap:8px}
+.comment-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:14px 22px;border-top:1px solid var(--paper-2)}
+.comment-author{font-size:12.5px;font-weight:500;margin-bottom:3px}
+.comment-text{font-size:13px;color:var(--ink-2);font-style:italic}
+
+/* ── FAN FAVORITE ─────────────────────────────── */
+.ff-card{display:flex;gap:20px;align-items:center;padding:24px}
+.ff-emoji{width:72px;height:72px;border-radius:var(--radius-md);background:var(--gold-pale);display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
+.ff-title{font-family:var(--font-display);font-size:21px}
+.ff-desc{font-size:13px;color:var(--ink-3);margin-top:4px;max-width:480px}
+.ff-form{display:flex;gap:10px;padding:0 22px 22px;align-items:center}
+
+/* ── MODAL ────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(26,18,8,0.5);z-index:600;
+  display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  width:100%;max-width:560px;background:var(--paper);border-radius:var(--radius-lg);
+  padding:30px 32px 32px;box-shadow:var(--shadow-float);
+}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-family:var(--font-display);font-size:21px}
+.modal-close{width:28px;height:28px;border-radius:8px;border:none;background:var(--paper-3);font-size:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11.5px;color:var(--ink-3);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.4px}
+.field input,.field textarea,.field select{
+  width:100%;padding:10px 12px;border:1.5px solid var(--paper-3);border-radius:var(--radius-sm);
+  font-size:13.5px;background:#fff;outline:none;transition:border-color var(--t-fast);
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--ember)}
+.field textarea{resize:vertical;min-height:64px;line-height:1.5}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field-hint{font-size:11px;color:var(--ink-3);margin-top:4px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+
+/* ── TOAST ────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:12px 22px;border-radius:30px;font-size:13px;
+  opacity:0;pointer-events:none;transition:all 0.25s ease;z-index:900;box-shadow:var(--shadow-float);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--red)}
+.toast.success{background:var(--leaf)}
+
+@media(max-width:860px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform .2s ease;z-index:700;width:220px}
+  .sidebar.open{transform:none}
+  .main{padding:20px 18px 60px;width:100%}
+  .mobile-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .mobile-bar button{background:var(--ink);color:#fff;border:none;width:36px;height:36px;border-radius:8px;font-size:15px}
+}
+@media(min-width:861px){.mobile-bar{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ── ADMIN LOGIN ─────────────────────────────── -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-mark">🔒</div>
+    <div class="gate-title">CookNest Admin</div>
+    <div class="gate-sub">Sign in with your admin account</div>
+    <input type="email" class="gate-input" id="gate-email" placeholder="admin@cooknest.com" autocomplete="username" style="margin-bottom:10px" onkeydown="if(event.key==='Enter')document.getElementById('gate-pass').focus()">
+    <input type="password" class="gate-input" id="gate-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <button class="gate-btn" onclick="tryUnlock()">Sign in</button>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
+
+<!-- ── APP ────────────────────────────────────────── -->
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-mark">🍳</div>
+      <div><div class="sb-name">CookNest</div><div class="sb-tag">Admin</div></div>
+    </div>
+    <nav class="sb-nav">
+      <button class="sb-link active" data-page="dashboard" onclick="showPage('dashboard')"><span class="sb-icon">📊</span>Dashboard</button>
+      <button class="sb-link" data-page="recipes" onclick="showPage('recipes')"><span class="sb-icon">🍽️</span>Recipes</button>
+      <button class="sb-link" data-page="orders" onclick="showPage('orders')"><span class="sb-icon">📦</span>Orders</button>
+      <button class="sb-link" data-page="users" onclick="showPage('users')"><span class="sb-icon">👤</span>Users</button>
+      <button class="sb-link" data-page="comments" onclick="showPage('comments')"><span class="sb-icon">💬</span>Comments</button>
+      <button class="sb-link" data-page="fanfav" onclick="showPage('fanfav')"><span class="sb-icon">⭐</span>Fan Favorite</button>
+    </nav>
+    <div class="sb-foot">
+      <a href="index.html" target="_blank">↗ View storefront</a>
+      <button onclick="lockOut()">Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-bar"><button onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button><strong>CookNest Admin</strong></div>
+
+    <!-- DASHBOARD -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-head">
+        <div><div class="page-title">Dashboard</div><div class="page-sub">A snapshot of the CookNest store</div></div>
+      </div>
+      <div class="stats-grid" id="stats-grid"></div>
+      <div class="section-card">
+        <div class="section-card-head"><span class="section-card-title">Recent orders</span><button class="btn btn-ghost btn-sm" onclick="showPage('orders')">View all →</button></div>
+        <div class="table-wrap"><table id="recent-orders-table"></table></div>
+      </div>
+    </section>
+
+    <!-- RECIPES -->
+    <section class="page" id="page-recipes">
+      <div class="page-head">
+        <div><div class="page-title">Recipes</div><div class="page-sub" id="recipes-count-sub"></div></div>
+        <button class="btn btn-primary" onclick="openRecipeModal()">+ Add recipe</button>
+      </div>
+      <div class="section-card"><div class="table-wrap"><table id="recipes-table"></table></div></div>
+    </section>
+
+    <!-- ORDERS -->
+    <section class="page" id="page-orders">
+      <div class="page-head">
+        <div><div class="page-title">Orders</div><div class="page-sub" id="orders-count-sub"></div></div>
+      </div>
+      <div class="section-card"><div class="table-wrap"><table id="orders-table"></table></div></div>
+    </section>
+
+    <!-- USERS -->
+    <section class="page" id="page-users">
+      <div class="page-head">
+        <div><div class="page-title">Users</div><div class="page-sub" id="users-count-sub"></div></div>
+      </div>
+      <div class="section-card"><div class="table-wrap"><table id="users-table"></table></div></div>
+    </section>
+
+    <!-- COMMENTS -->
+    <section class="page" id="page-comments">
+      <div class="page-head">
+        <div><div class="page-title">Comments</div><div class="page-sub">Moderate recipe reviews and comments</div></div>
+      </div>
+      <div class="section-card" id="comments-wrap"></div>
+    </section>
+
+    <!-- FAN FAVORITE -->
+    <section class="page" id="page-fanfav">
+      <div class="page-head">
+        <div><div class="page-title">Fan Favorite</div><div class="page-sub">Choose the recipe featured as this week's fan favorite</div></div>
+      </div>
+      <div class="section-card">
+        <div class="ff-card" id="ff-preview"></div>
+        <div class="ff-form">
+          <select id="ff-select" class="field" style="flex:1;padding:10px 12px;border:1.5px solid var(--paper-3);border-radius:8px;font-size:13.5px"></select>
+          <button class="btn btn-primary" onclick="saveFanFav()">Save</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- RECIPE MODAL -->
+<div class="modal-overlay" id="recipe-modal-overlay" onclick="if(event.target===this)closeRecipeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="recipe-modal-title">Add recipe</div>
+      <button class="modal-close" onclick="closeRecipeModal()">✕</button>
+    </div>
+    <input type="hidden" id="rf-id">
+    <div class="field-row">
+      <div class="field"><label>Emoji</label><input id="rf-emoji" maxlength="4" placeholder="🍝"></div>
+      <div class="field"><label>Category</label><input id="rf-cat" placeholder="Filipino"></div>
+    </div>
+    <div class="field"><label>Title</label><input id="rf-title" placeholder="Chicken Adobo"></div>
+    <div class="field"><label>Description</label><textarea id="rf-desc" placeholder="Short, appetizing description"></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Price (₱)</label><input id="rf-price" type="number" min="0"></div>
+      <div class="field"><label>Rating (0–5)</label><input id="rf-rating" type="number" min="0" max="5" step="0.1"></div>
+    </div>
+    <div class="field"><label>Reviews count</label><input id="rf-reviews" type="number" min="0"></div>
+    <div class="field"><label>Ingredients (one per line)</label><textarea id="rf-ing" placeholder="500g chicken pieces&#10;½ cup soy sauce"></textarea></div>
+    <div class="field"><label>Steps (one per line)</label><textarea id="rf-steps" placeholder="Marinate the chicken...&#10;Sauté the garlic..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeRecipeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRecipe()">Save recipe</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── CONFIG ───────────────────────────────────── */
+const API_URL = "https://cooknest-production.up.railway.app";
+const K={CU:'cn_currentuser',TOKEN:'cn_token'};
+const STATUSES=['Confirmed','Preparing','Out for Delivery','Delivered','Cancelled'];
+
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+function authHeaders(){return authToken?{"Authorization":"Bearer "+authToken}:{}}
+
+let currentUser=load(K.CU,null);
+let authToken=load(K.TOKEN,null);
+let recipes=[];
+let orders=[];
+let comments=[];
+let users=[];
+let fanFavId=null;
+
+/* ── GATE ─────────────────────────────────────── */
+async function tryUnlock(){
+  const email=document.getElementById('gate-email').value.trim().toLowerCase();
+  const pass=document.getElementById('gate-pass').value;
+  const errEl=document.getElementById('gate-err');
+  errEl.textContent='';
+  if(!email||!pass){errEl.textContent='Please enter your email and password.';return}
+  const btn=document.querySelector('.gate-btn');
+  const original=btn.textContent;btn.textContent='Signing in…';btn.disabled=true;
+  try{
+    const res=await fetch(`${API_URL}/users/login`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pass})
+    });
+    const data=await res.json();
+    if(!res.ok||data.success===false){
+      errEl.textContent=data.message||data.error||'Incorrect email or password.';
+      return;
+    }
+    if(data.user.role!=='admin'){
+      errEl.textContent='This account does not have admin access.';
+      return;
+    }
+    currentUser=data.user;authToken=data.token;
+    save(K.CU,currentUser);save(K.TOKEN,authToken);
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').classList.add('show');
+    await renderAll();
+  }catch(err){
+    errEl.textContent='Could not reach the server. Please try again.';
+  }finally{
+    btn.textContent=original;btn.disabled=false;
+  }
+}
+function lockOut(){
+  currentUser=null;authToken=null;
+  save(K.CU,null);save(K.TOKEN,null);
+  location.reload();
+}
+
+/* ── NAV ──────────────────────────────────────── */
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.sb-link').forEach(el=>el.classList.toggle('active',el.dataset.page===p));
+  document.getElementById('sidebar').classList.remove('open');
+  if(p==='dashboard')renderDashboard();
+  if(p==='recipes')renderRecipes();
+  if(p==='orders')renderOrdersTable();
+  if(p==='users')renderUsers();
+  if(p==='comments')renderComments();
+  if(p==='fanfav')renderFanFav();
+}
+
+async function renderAll(){
+  try{
+    const [recipesRes,ordersRes,usersRes,commentsRes,fanFavRes]=await Promise.all([
+      fetch(`${API_URL}/recipes`),
+      fetch(`${API_URL}/orders/all`,{headers:authHeaders()}),
+      fetch(`${API_URL}/users`,{headers:authHeaders()}),
+      fetch(`${API_URL}/comments`,{headers:authHeaders()}),
+      fetch(`${API_URL}/settings/fan-fav`)
+    ]);
+    if(ordersRes.status===401||usersRes.status===401||commentsRes.status===401){
+      lockOut();return;
+    }
+    const recipesData=await recipesRes.json();
+    recipes=recipesData.map(r=>({...r,desc:r.description,price:Number(r.price),rating:Number(r.rating),reviews:Number(r.reviews)}));
+    orders=await ordersRes.json();
+    users=await usersRes.json();
+    comments=await commentsRes.json();
+    const fanFavData=await fanFavRes.json();
+    fanFavId=fanFavData.fan_fav_id;
+  }catch(err){
+    console.error(err);
+    showToast('Could not load dashboard data — check your connection','error');
+    return;
+  }
+  renderDashboard();renderRecipes();renderOrdersTable();renderUsers();renderComments();renderFanFav();
+}
+
+/* ── TOAST ────────────────────────────────────── */
+let _tt;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  clearTimeout(_tt);_tt=setTimeout(()=>t.className='toast',2600);
+}
+
+/* ── DASHBOARD ────────────────────────────────── */
+function renderDashboard(){
+  const revenue=orders.reduce((a,o)=>a+Number(o.total||0),0);
+  const totalComments=comments.length;
+  const stats=[
+    {icon:'🍽️',bg:'var(--ember-pale)',num:recipes.length,label:'Recipes'},
+    {icon:'📦',bg:'var(--gold-pale)',num:orders.length,label:'Orders placed'},
+    {icon:'💰',bg:'var(--leaf-pale)',num:'₱'+revenue.toLocaleString(),label:'Total revenue'},
+    {icon:'👤',bg:'var(--ember-pale)',num:users.length,label:'Registered users'},
+    {icon:'💬',bg:'var(--gold-pale)',num:totalComments,label:'Comments'}
+  ];
+  document.getElementById('stats-grid').innerHTML=stats.map(s=>`
+    <div class="stat-card">
+      <div class="stat-icon" style="background:${s.bg}">${s.icon}</div>
+      <div class="stat-num">${s.num}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join('');
+
+  const recent=orders.slice(0,5);
+  const table=document.getElementById('recent-orders-table');
+  if(!recent.length){
+    table.outerHTML='<div class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-title">No orders yet</div><div class="empty-state-sub">Orders placed on the storefront will appear here.</div></div>';
+    return;
+  }
+  table.innerHTML=`
+    <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>${recent.map(o=>`
+      <tr>
+        <td class="cell-muted">#${o.id}</td>
+        <td>${o.customer_name}</td>
+        <td><div class="order-chips">${(o.items||[]).map(i=>`<span class="order-chip">${i.emoji||''} ×${i.qty}</span>`).join('')}</div></td>
+        <td>₱${Number(o.total).toLocaleString()}</td>
+        <td><span class="tag">${o.status}</span></td>
+        <td class="cell-muted">${new Date(o.date).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'})}</td>
+      </tr>`).join('')}</tbody>`;
+}
+
+/* ── RECIPES ──────────────────────────────────── */
+function renderRecipes(){
+  document.getElementById('recipes-count-sub').textContent=recipes.length+' recipe'+(recipes.length===1?'':'s')+' in the catalog';
+  const table=document.getElementById('recipes-table');
+  if(!recipes.length){
+    table.parentElement.innerHTML='<div class="empty-state"><div class="empty-state-icon">🍽️</div><div class="empty-state-title">No recipes yet</div><div class="empty-state-sub">Add your first recipe to get started.</div></div>';
+    return;
+  }
+  table.innerHTML=`
+    <thead><tr><th>Recipe</th><th>Category</th><th>Price</th><th>Rating</th><th>Reviews</th><th></th></tr></thead>
+    <tbody>${recipes.map(r=>`
+      <tr>
+        <td class="cell-title"><span class="cell-emoji">${r.emoji}</span>${r.title}</td>
+        <td><span class="tag">${r.cat}</span></td>
+        <td>₱${r.price}</td>
+        <td>★ ${r.rating}</td>
+        <td class="cell-muted">${r.reviews}</td>
+        <td class="actions-cell">
+          <button class="icon-btn" title="Edit" onclick="openRecipeModal(${r.id})">✎</button>
+          <button class="icon-btn" title="Delete" onclick="deleteRecipe(${r.id})">🗑</button>
+        </td>
+      </tr>`).join('')}</tbody>`;
+}
+
+function openRecipeModal(id){
+  const editing=id!=null;
+  document.getElementById('recipe-modal-title').textContent=editing?'Edit recipe':'Add recipe';
+  const r=editing?recipes.find(x=>x.id===id):null;
+  document.getElementById('rf-id').value=editing?id:'';
+  document.getElementById('rf-emoji').value=r?r.emoji:'';
+  document.getElementById('rf-cat').value=r?r.cat:'';
+  document.getElementById('rf-title').value=r?r.title:'';
+  document.getElementById('rf-desc').value=r?r.desc:'';
+  document.getElementById('rf-price').value=r?r.price:'';
+  document.getElementById('rf-rating').value=r?r.rating:'5';
+  document.getElementById('rf-reviews').value=r?r.reviews:'0';
+  document.getElementById('rf-ing').value=r?r.ing.join('\n'):'';
+  document.getElementById('rf-steps').value=r?r.steps.join('\n'):'';
+  document.getElementById('recipe-modal-overlay').classList.add('open');
+}
+function closeRecipeModal(){document.getElementById('recipe-modal-overlay').classList.remove('open')}
+
+async function saveRecipe(){
+  const idVal=document.getElementById('rf-id').value;
+  const title=document.getElementById('rf-title').value.trim();
+  const cat=document.getElementById('rf-cat').value.trim();
+  const emoji=document.getElementById('rf-emoji').value.trim()||'🍽️';
+  const description=document.getElementById('rf-desc').value.trim();
+  const price=parseFloat(document.getElementById('rf-price').value)||0;
+  const rating=parseFloat(document.getElementById('rf-rating').value)||5;
+  const reviews=parseInt(document.getElementById('rf-reviews').value)||0;
+  const ing=document.getElementById('rf-ing').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const steps=document.getElementById('rf-steps').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!title||!cat||!ing.length||!steps.length){showToast('Please fill in title, category, ingredients and steps','error');return}
+
+  const payload={title,cat,emoji,description,price,rating,reviews,ing,steps};
+  const btn=document.querySelector('.modal-actions .btn-primary');
+  const original=btn.textContent;btn.textContent='Saving…';btn.disabled=true;
+  try{
+    if(idVal){
+      await adminUpdateRecipe(idVal,payload);
+      showToast('Recipe updated','success');
+    }else{
+      await adminCreateRecipe({...payload,added:new Date().toISOString().slice(0,10)});
+      showToast('Recipe added','success');
+    }
+    closeRecipeModal();
+    await renderAll();
+  }catch(err){
+    showToast(err.message||'Could not save recipe','error');
+  }finally{
+    btn.textContent=original;btn.disabled=false;
+  }
+}
+
+async function deleteRecipe(id){
+  const r=recipes.find(x=>x.id===id);
+  if(!confirm(`Delete "${r.title}"? This can't be undone.`))return;
+  try{
+    await adminDeleteRecipe(id);
+    showToast('Recipe deleted','success');
+    await renderAll();
+  }catch(err){
+    showToast(err.message||'Could not delete recipe','error');
+  }
+}
+
+/* ── ADMIN API CALLS ────────────────────────────── */
+async function adminCreateRecipe(recipe){
+  const res=await fetch(`${API_URL}/recipes`,{
+    method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},
+    body:JSON.stringify(recipe)
+  });
+  const data=await res.json();
+  if(!res.ok){if(res.status===401)lockOut();throw new Error(data.error||'Failed to create recipe')}
+  return data;
+}
+async function adminUpdateRecipe(id,recipe){
+  const res=await fetch(`${API_URL}/recipes/${id}`,{
+    method:'PUT',headers:{'Content-Type':'application/json',...authHeaders()},
+    body:JSON.stringify(recipe)
+  });
+  const data=await res.json();
+  if(!res.ok){if(res.status===401)lockOut();throw new Error(data.error||'Failed to update recipe')}
+  return data;
+}
+async function adminDeleteRecipe(id){
+  const res=await fetch(`${API_URL}/recipes/${id}`,{method:'DELETE',headers:authHeaders()});
+  if(!res.ok){if(res.status===401)lockOut();throw new Error('Failed to delete recipe')}
+  return await res.json();
+}
+async function adminUpdateOrderStatus(id,status){
+  const res=await fetch(`${API_URL}/orders/${id}/status`,{
+    method:'PUT',headers:{'Content-Type':'application/json',...authHeaders()},
+    body:JSON.stringify({status})
+  });
+  if(!res.ok){if(res.status===401)lockOut();throw new Error('Failed to update order status')}
+  return await res.json();
+}
+async function adminDeleteComment(id){
+  const res=await fetch(`${API_URL}/comments/${id}`,{method:'DELETE',headers:authHeaders()});
+  if(!res.ok){if(res.status===401)lockOut();throw new Error('Failed to delete comment')}
+  return await res.json();
+}
+async function adminSetFanFav(recipe_id){
+  const res=await fetch(`${API_URL}/settings/fan-fav`,{
+    method:'PUT',headers:{'Content-Type':'application/json',...authHeaders()},
+    body:JSON.stringify({recipe_id})
+  });
+  if(!res.ok){if(res.status===401)lockOut();throw new Error('Failed to update fan favourite')}
+  return await res.json();
+}
+
+/* ── ORDERS ───────────────────────────────────── */
+function renderOrdersTable(){
+  document.getElementById('orders-count-sub').textContent=orders.length+' order'+(orders.length===1?'':'s')+' placed';
+  const table=document.getElementById('orders-table');
+  if(!orders.length){
+    table.parentElement.innerHTML='<div class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-title">No orders yet</div><div class="empty-state-sub">Orders placed on the storefront will appear here.</div></div>';
+    return;
+  }
+  table.innerHTML=`
+    <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>${orders.map(o=>`
+      <tr>
+        <td class="cell-muted">#${o.id}</td>
+        <td>${o.customer_name}<div class="cell-muted">${o.customer_email}</div></td>
+        <td><div class="order-chips">${(o.items||[]).map(i=>`<span class="order-chip">${i.emoji||''} ${i.title} ×${i.qty}</span>`).join('')}</div></td>
+        <td>₱${Number(o.total).toLocaleString()}</td>
+        <td class="cell-muted">${o.payment_method||'—'}</td>
+        <td>
+          <select class="status-select" data-status="${o.status}" onchange="handleStatusChange(${o.id},this.value)">
+            ${STATUSES.map(s=>`<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </td>
+        <td class="cell-muted">${new Date(o.date).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'})}</td>
+      </tr>`).join('')}</tbody>`;
+}
+async function handleStatusChange(id,status){
+  try{
+    await adminUpdateOrderStatus(id,status);
+    const o=orders.find(x=>x.id===id);
+    if(o)o.status=status;
+    renderDashboard();
+    showToast('Order #'+id+' marked as '+status,'success');
+  }catch(err){
+    showToast(err.message||'Could not update order status','error');
+    renderOrdersTable();
+  }
+}
+
+/* ── USERS ────────────────────────────────────── */
+function renderUsers(){
+  document.getElementById('users-count-sub').textContent=users.length+' registered user'+(users.length===1?'':'s');
+  const table=document.getElementById('users-table');
+  if(!users.length){
+    table.parentElement.innerHTML='<div class="empty-state"><div class="empty-state-icon">👤</div><div class="empty-state-title">No registered users yet</div><div class="empty-state-sub">Accounts created on the storefront will appear here.</div></div>';
+    return;
+  }
+  table.innerHTML=`
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Orders placed</th></tr></thead>
+    <tbody>${users.map(u=>{
+      const count=orders.filter(o=>o.customer_email===u.email).length;
+      return `<tr>
+        <td class="cell-title">${u.name}</td>
+        <td class="cell-muted">${u.email}</td>
+        <td><span class="tag">${u.role}</span></td>
+        <td>${count}</td>
+      </tr>`;
+    }).join('')}</tbody>`;
+}
+/* Note: user deletion isn't exposed here on purpose — deleting a user
+   cascades to their orders/comments in the DB. Manage this directly in
+   MySQL if you need to remove an account. */
+
+/* ── COMMENTS ─────────────────────────────────── */
+function renderComments(){
+  const wrap=document.getElementById('comments-wrap');
+  if(!comments.length){
+    wrap.innerHTML='<div class="empty-state"><div class="empty-state-icon">💬</div><div class="empty-state-title">No comments yet</div><div class="empty-state-sub">Reviews left on recipes will appear here.</div></div>';
+    return;
+  }
+  const byRecipe={};
+  comments.forEach(c=>{(byRecipe[c.recipe_id]||=[]).push(c)});
+  wrap.innerHTML=Object.keys(byRecipe).map(id=>{
+    const list=byRecipe[id];
+    const title=list[0].recipe_title||'Recipe #'+id;
+    return `<div class="comment-group">
+      <div class="comment-group-head">${title} <span class="cell-muted">(${list.length})</span></div>
+      ${list.map(c=>`
+        <div class="comment-row">
+          <div><div class="comment-author">${c.name}</div><div class="comment-text">${c.text}</div></div>
+          <button class="icon-btn" title="Delete" onclick="handleDeleteComment(${c.id})">🗑</button>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+async function handleDeleteComment(id){
+  if(!confirm('Delete this comment?'))return;
+  try{
+    await adminDeleteComment(id);
+    comments=comments.filter(c=>c.id!==id);
+    renderComments();renderDashboard();
+    showToast('Comment deleted','success');
+  }catch(err){
+    showToast(err.message||'Could not delete comment','error');
+  }
+}
+
+/* ── FAN FAVORITE ─────────────────────────────── */
+function renderFanFav(){
+  const sel=document.getElementById('ff-select');
+  sel.innerHTML=recipes.map(r=>`<option value="${r.id}" ${r.id===fanFavId?'selected':''}>${r.emoji} ${r.title}</option>`).join('');
+  const r=recipes.find(x=>x.id===fanFavId)||recipes[0];
+  document.getElementById('ff-preview').innerHTML=r?`
+    <div class="ff-emoji">${r.emoji}</div>
+    <div><div class="ff-title">${r.title}</div><div class="ff-desc">${r.desc}</div></div>
+  `:'<div class="empty-state">No recipes available to feature.</div>';
+}
+async function saveFanFav(){
+  const newId=parseInt(document.getElementById('ff-select').value);
+  try{
+    await adminSetFanFav(newId);
+    fanFavId=newId;
+    renderFanFav();
+    showToast('Fan favorite updated','success');
+  }catch(err){
+    showToast(err.message||'Could not update fan favourite','error');
+  }
+}
+
+/* ── INIT ───────────────────────────────────────── */
+// If a valid admin session is already stored, skip the gate and load data.
+if(currentUser&&authToken&&currentUser.role==='admin'){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('app').classList.add('show');
+  renderAll();
+}
+</script>
+</body>
+</html>
