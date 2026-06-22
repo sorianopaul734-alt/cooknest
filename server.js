@@ -359,3 +359,4 @@ app.listen(process.env.PORT || 5000, () => {
 const loginRoutes = require('./routes/login');
 app.use('/api', loginRoutes);
 
+app.use('/api/admin', requireAdmin, adminRoutes);

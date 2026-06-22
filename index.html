@@ -1124,22 +1124,41 @@ function switchLoginTab(tab,btn){
   }
 }
 async function doLogin(){
-  const email=document.getElementById('li-email').value.trim().toLowerCase();
-  const pass=document.getElementById('li-pass').value;
-  if(!email||!pass){showToast('Please enter your email and password','error');return}
-  const btn=document.querySelector('#tab-login .btn-login-submit');
-  const original=btn.textContent;btn.textContent='Signing in…';btn.disabled=true;
-  try{
-    const data=await loginUser(email,pass);
-    closeLogin();renderAuthArea();
-    showToast('Welcome back, '+data.user.name.split(' ')[0]+'! 👋','success');
-    await refreshMyOrders();
-  }catch(err){
-    showToast(err.message||'Incorrect email or password','error');
-  }finally{
-    btn.textContent=original;btn.disabled=false;
+  const email = document.getElementById('li-email').value.trim().toLowerCase();
+  const pass = document.getElementById('li-pass').value;
+  if(!email || !pass){
+    showToast('Please enter your email and password','error');
+    return;
+  }
+  const btn = document.querySelector('#tab-login .btn-login-submit');
+  const original = btn.textContent;
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
+
+  try {
+    const data = await loginUser(email, pass);
+
+    // 👉 Save token + role here
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('role', data.role);
+
+    // 👉 Redirect based on role
+    if (data.role === 'admin') {
+      window.location.href = '/admin.html';
+    } else {
+      closeLogin();
+      renderAuthArea();
+      showToast('Welcome back, ' + data.user.name.split(' ')[0] + '! 👋','success');
+      await refreshMyOrders();
+    }
+  } catch(err) {
+    showToast(err.message || 'Incorrect email or password','error');
+  } finally {
+    btn.textContent = original;
+    btn.disabled = false;
   }
 }
+
 function doGuestLogin(){
   closeLogin();
   showToast('Browsing as guest');

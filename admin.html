@@ -220,6 +220,8 @@ tr:hover td{background:var(--paper-2)}
 </head>
 <body>
 
+
+
 <!-- ── ADMIN LOGIN ─────────────────────────────── -->
 <div class="gate" id="gate">
   <div class="gate-card">
@@ -755,7 +757,23 @@ async function saveFanFav(){
 
 <script>
 async function loadUsers() {
-  const res = await fetch('/api/users');
+  const token = localStorage.getItem('token');   // 👉 get token from login
+  const role = localStorage.getItem('role');     // 👉 check role
+
+  // 👉 Block customers immediately when admin.html loads
+const role = localStorage.getItem('role');
+if (role !== 'admin') {
+  alert('Access denied: Admins only');
+  window.location.href = '/store.html';
+  return; // stop running the rest of the script
+}
+
+// Safe to run admin functions now
+async function loadUsers() {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/users', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
   const users = await res.json();
 
   const tbody = document.getElementById('users-body');
@@ -775,15 +793,62 @@ async function loadUsers() {
 }
 
 async function updateRole(userId, newRole) {
-  const res = await fetch(`/api/users/${userId}/role`, {
+  const token = localStorage.getItem('token');
+  await fetch(`/api/admin/users/${userId}/role`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
     body: JSON.stringify({ role: newRole })
   });
-  const data = await res.json();
-  alert(data.message);
   loadUsers(); // refresh table
 }
+  // Send token with request
+  const res = await fetch('/api/users', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+
+  if (!res.ok) {
+    alert('Session expired or unauthorized');
+    window.location.href = '/'; // back to login
+    return;
+  }
+
+  const users = await res.json();
+
+  const tbody = document.getElementById('users-body');
+  tbody.innerHTML = users.map(u => `
+    <tr>
+      <td>${u.id}</td>
+      <td>${u.name}</td>
+      <td>${u.email}</td>
+      <td>
+        <select onchange="updateRole(${u.id}, this.value)">
+          <option value="user" ${u.role === 'user' ? 'selected' : ''}>User</option>
+          <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+        </select>
+      </td>
+    </tr>
+  `).join('');
+}
+</script>
+
+}
+
+async function updateRole(userId, newRole) {
+  const token = localStorage.getItem('token');
+  await fetch(`/api/admin/users/${userId}/role`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({ role: newRole })
+  });
+  loadUsers(); // refresh table
+}
+
 
 // load users when page opens
 loadUsers();
