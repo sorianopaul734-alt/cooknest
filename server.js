@@ -337,59 +337,20 @@ app.put('/settings/fan-fav', requireAuth, requireAdmin, async (req, res) => {
   res.json({ success: true });
 });
 
-/* ===================== SERVER ===================== */
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`Server running on port ${process.env.PORT || 5000}`);
-});
-
-// mount signup route
+/* ===================== ADDITIONAL ROUTES ===================== */
+// Signup route
 app.use(require('./signup'));
 
-
-
-// mount admin routes
+// Admin routes (role management etc.)
 const adminRoutes = require('./routes/admin');
-app.use('/api', adminRoutes);
+app.use('/api/admin', requireAuth, requireAdmin, adminRoutes);
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`Server running on port ${process.env.PORT || 5000}`);
-});
+// Root + health check (for Render)
+app.get('/', (req, res) => res.send('CookNest backend is live 🚀'));
+app.get('/healthz', (req, res) => res.sendStatus(200));
 
-
-const loginRoutes = require('./routes/login');
-app.use('/api', loginRoutes);
-
-app.use('/api/admin', requireAdmin, adminRoutes);
-
-
-
+/* ===================== SERVER ===================== */
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-
-//FOR RENDER//
-// Middleware (optional)
-app.use(express.json());
-
-// Root route
-app.get('/', (req, res) => {
-  res.send('CookNest backend is live 🚀');
-});
-
-// Health check route
-app.get('/healthz', (req, res) => {
-  res.sendStatus(200);
-});
-
-// Example API route
-app.get('/recipes', (req, res) => {
-  res.json({ message: 'Here are your recipes!' });
-});
-
-// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
