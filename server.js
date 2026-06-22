@@ -369,3 +369,27 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+
+//FOR RENDER//
+// Middleware (optional)
+app.use(express.json());
+
+// Root route
+app.get('/', (req, res) => {
+  res.send('CookNest backend is live 🚀');
+});
+
+// Health check route
+app.get('/healthz', (req, res) => {
+  res.sendStatus(200);
+});
+
+// Example API route
+app.get('/recipes', (req, res) => {
+  res.json({ message: 'Here are your recipes!' });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
