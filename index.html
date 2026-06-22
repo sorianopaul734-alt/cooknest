@@ -791,6 +791,7 @@ footer{background:var(--ink);padding:40px;margin-top:40px}
     <div id="orders-list"></div>
   </div>
 </div>
+<button onclick="cancelOrder(order.id)">Cancel Order</button>
 
 <!-- ══════════════ FAN FAVOURITE EDITOR PAGE ══════════════ -->
 <div class="page" id="page-fanfav">
@@ -1241,6 +1242,27 @@ async function refreshMyOrders(){
     orders=await res.json();
   }catch{/* ignore */}
 }
+async function cancelOrder(orderId) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/${orderId}/cancel`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    alert(error.error || 'Failed to cancel order');
+    return;
+  }
+
+  const data = await response.json();
+  alert(data.message);
+  // Refresh orders list
+  loadOrders();
+}
+
 async function postCommentApi(recipe_id,text,rating){
   const res=await fetch(`${API_URL}/comments`,{
     method:"POST",headers:{"Content-Type":"application/json",...authHeaders()},
@@ -1637,6 +1659,7 @@ function renderOrders(){
     </div>
   `).join('');
 }
+
 
 /* ── TOAST ──────────────────────────────────────── */
 let _tt;
