@@ -791,7 +791,6 @@ footer{background:var(--ink);padding:40px;margin-top:40px}
     <div id="orders-list"></div>
   </div>
 </div>
-<button onclick="cancelOrder(order.id)">Cancel Order</button>
 
 <!-- ══════════════ FAN FAVOURITE EDITOR PAGE ══════════════ -->
 <div class="page" id="page-fanfav">
@@ -1242,25 +1241,21 @@ async function refreshMyOrders(){
     orders=await res.json();
   }catch{/* ignore */}
 }
-async function cancelOrder(orderId) {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/${orderId}/cancel`, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    alert(error.error || 'Failed to cancel order');
-    return;
+async function cancelOrder(orderId){
+  if(!confirm('Cancel this order?'))return;
+  try{
+    const res=await fetch(`${API_URL}/orders/${orderId}/cancel`,{
+      method:'PUT',
+      headers:authHeaders()
+    });
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Failed to cancel order');
+    await refreshMyOrders();
+    renderOrders();
+    showToast(data.message||'Order cancelled','success');
+  }catch(err){
+    showToast(err.message||'Failed to cancel order','error');
   }
-
-  const data = await response.json();
-  alert(data.message);
-  // Refresh orders list
-  loadOrders();
 }
 
 async function postCommentApi(recipe_id,text,rating){
@@ -1656,6 +1651,7 @@ function renderOrders(){
         <span class="order-pay-method">Paid via ${o.payment_method||'GCash'}</span>
         <span class="order-total">₱${o.total}</span>
       </div>
+      ${(o.status==='Confirmed'||o.status==='Preparing')?`<button class="btn-rm" style="margin-top:10px" onclick="cancelOrder(${o.id})">Cancel Order</button>`:''}
     </div>
   `).join('');
 }

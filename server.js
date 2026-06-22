@@ -238,6 +238,35 @@ app.get('/orders/:user_id', requireAuth, async (req, res) => {
   res.json(rows);
 });
 
+// Customer: cancel their own order
+app.put('/orders/:id/cancel', requireAuth, async (req, res) => {
+  const orderId = req.params.id;
+  const userId = req.user.id; // from JWT
+
+  try {
+    // Check if order belongs to this user
+    const [rows] = await db.query('SELECT * FROM orders WHERE id = ? AND user_id = ?', [orderId, userId]);
+    const order = rows[0];
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found, or it does not belong to you.' });
+    }
+
+    // Prevent cancelling if already Delivered or Cancelled
+    if (order.status === 'Delivered' || order.status === 'Cancelled') {
+      return res.status(400).json({ error: 'Order cannot be cancelled.' });
+    }
+
+    // Update status to Cancelled
+    await db.query('UPDATE orders SET status = ? WHERE id = ?', ['Cancelled', orderId]);
+
+    res.json({ message: 'Order cancelled successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to cancel order.' });
+  }
+});
+
 // Admin-only: update order status
 app.put('/orders/:id/status', requireAuth, requireAdmin, async (req, res) => {
   try {
@@ -353,33 +382,4 @@ app.get('/healthz', (req, res) => res.sendStatus(200));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-});
-
-
-// Cancel own order
-app.put('/orders/:id/cancel', requireAuth, async (req, res) => {
-  const orderId = req.params.id;
-  const userId = req.user.id; // from JWT
-
-  try {
-    // Check if order belongs to this user
-    const [order] = await db.query('SELECT * FROM orders WHERE id = ? AND user_id = ?', [orderId, userId]);
-
-    if (!order) {
-      return res.status(403).json({ error: 'You can only cancel your own orders.' });
-    }
-
-    // Prevent cancelling if already Delivered or Cancelled
-    if (order.status === 'Delivered' || order.status === 'Cancelled') {
-      return res.status(400).json({ error: 'Order cannot be cancelled.' });
-    }
-
-    // Update status to Cancelled
-    await db.query('UPDATE orders SET status = ? WHERE id = ?', ['Cancelled', orderId]);
-
-    res.json({ message: 'Order cancelled successfully.' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to cancel order.' });
-  }
 });
