@@ -362,7 +362,7 @@ app.use('/api', loginRoutes);
 app.use('/api/admin', requireAdmin, adminRoutes);
 
 
-const app = require('./app');
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
