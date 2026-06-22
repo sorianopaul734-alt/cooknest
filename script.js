@@ -88,6 +88,29 @@ async function placeOrderApi(items, total, payment_method) {
   return data;
 }
 
+function loadOrders() {
+  const token = localStorage.getItem('token');
+  fetch(`${import.meta.env.VITE_API_URL}/orders/${userId}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  .then(res => res.json())
+  .then(orders => {
+    const container = document.getElementById('ordersContainer');
+    container.innerHTML = '';
+    orders.forEach(order => {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <p>Order #${order.id} - Status: ${order.status}</p>
+        ${order.status === 'Confirmed' || order.status === 'Preparing'
+          ? `<button onclick="cancelOrder(${order.id})">Cancel Order</button>`
+          : ''}
+      `;
+      container.appendChild(div);
+    });
+  });
+}
+
+
 async function getMyOrders(user_id) {
   const res = await fetch(`${API_URL}/orders/${user_id}`, { headers: authHeaders() });
   if (!res.ok) throw new Error('Failed to load orders');
